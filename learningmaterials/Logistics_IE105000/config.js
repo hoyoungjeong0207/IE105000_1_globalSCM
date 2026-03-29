@@ -9,7 +9,7 @@ const CONFIG = {
   // ── Leaderboard backend (Streamlit app) ───────────────────────────────────
   // Paste the Streamlit Community Cloud URL after deploying leaderboard.py
   leaderboard: {
-    streamlitUrl: "STREAMLIT_URL",
+    streamlitUrl: "https://ie105000test1-3tv4cqeyosueedewvk6qh2.streamlit.app",
   },
 
   // ── Starting budget ────────────────────────────────────────────────────────
