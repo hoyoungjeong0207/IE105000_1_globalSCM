@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Leaderboard wiring ────────────────────────────────────────────────────
   document.getElementById('btn-leaderboard').addEventListener('click', openLeaderboard);
-  document.getElementById('lb-close').addEventListener('click', closeLeaderboard);
 });
 
 // ── Mode (active build tool) ──────────────────────────────────────────────────
@@ -516,13 +515,7 @@ function submitScore(result) {
 function openLeaderboard() {
   const url = STREAMLIT();
   if (!url || url === 'STREAMLIT_URL') { toast('Leaderboard not configured yet.'); return; }
-  document.getElementById('lb-iframe').src = url;
-  document.getElementById('lb-overlay').classList.remove('hidden');
-}
-
-function closeLeaderboard() {
-  document.getElementById('lb-overlay').classList.add('hidden');
-  document.getElementById('lb-iframe').src = '';
+  window.open(url, '_blank');
 }
 
 
