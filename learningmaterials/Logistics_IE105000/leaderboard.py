@@ -1,8 +1,10 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import sqlite3
 import pandas as pd
 from datetime import datetime
 import json
+from pathlib import Path
 
 st.set_page_config(page_title="Global Logistics — Leaderboard", page_icon="🌐", layout="wide")
 
@@ -79,9 +81,37 @@ pre_chain  = params.get("chain",  "")
 
 # ── Page ───────────────────────────────────────────────────────────────────────
 
-st.title("🌐 Global Logistics Game — Leaderboard")
+st.title("🌐 Global Logistics Game")
 
-tab_lb, tab_submit, tab_admin = st.tabs(["🏆 Leaderboard", "📤 Submit Score", "🔐 Admin"])
+tab_game, tab_lb, tab_submit, tab_admin = st.tabs(["🎮 Game", "🏆 Leaderboard", "📤 Submit Score", "🔐 Admin"])
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 🎮  GAME
+# ══════════════════════════════════════════════════════════════════════════════
+
+with tab_game:
+    here = Path(__file__).parent
+    style_css  = (here / "style.css").read_text(encoding="utf-8")
+    config_js  = (here / "config.js").read_text(encoding="utf-8")
+    game_js    = (here / "game.js").read_text(encoding="utf-8")
+    index_html = (here / "index.html").read_text(encoding="utf-8")
+
+    # Inline CSS and JS so no external file references needed
+    game_html = index_html
+    game_html = game_html.replace(
+        '<link rel="stylesheet" href="style.css" />',
+        f'<style>{style_css}\nbody{{height:680px!important;}}</style>'
+    )
+    game_html = game_html.replace(
+        '<script src="config.js"></script>',
+        f'<script>{config_js}</script>'
+    )
+    game_html = game_html.replace(
+        '<script src="game.js"></script>',
+        f'<script>{game_js}</script>'
+    )
+
+    components.html(game_html, height=680, scrolling=False)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 🏆  LEADERBOARD
