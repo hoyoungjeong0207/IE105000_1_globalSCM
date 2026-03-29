@@ -220,14 +220,19 @@ function showPopup(regionId) {
   const popup = document.getElementById('region-popup');
   const mapEl = document.getElementById('map-container');
 
-  // Offset popup so it doesn't overlap the pin; clamp inside map
-  let left = pinX + 18;
-  let top  = pinY - 20;
-  if (left + 270 > mapEl.offsetWidth)  left = pinX - 278;
-  if (top  + 240 > mapEl.offsetHeight) top  = mapEl.offsetHeight - 245;
-  if (top < 10) top = 10;
-  popup.style.left = left + 'px';
-  popup.style.top  = top  + 'px';
+  // On mobile use CSS bottom-sheet positioning; on desktop float near pin
+  if (window.innerWidth > 600) {
+    let left = pinX + 18;
+    let top  = pinY - 20;
+    if (left + 270 > mapEl.offsetWidth)  left = pinX - 278;
+    if (top  + 240 > mapEl.offsetHeight) top  = mapEl.offsetHeight - 245;
+    if (top < 10) top = 10;
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+  } else {
+    popup.style.left = '';
+    popup.style.top  = '';
+  }
 
   // Header
   document.getElementById('popup-region-name').textContent =
