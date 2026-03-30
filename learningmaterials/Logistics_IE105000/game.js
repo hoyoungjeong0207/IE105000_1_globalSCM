@@ -532,8 +532,10 @@ function submitScore(result) {
 
   if (_streamlitActive) {
     // Inside Streamlit — use bidirectional component communication
+    const submitId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     Streamlit.setComponentValue({
       type: 'submit_score',
+      submitId,
       studentId,
       name,
       profit: result.netProfit,
