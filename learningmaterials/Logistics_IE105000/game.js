@@ -43,9 +43,17 @@ const state = {
   budget:      CONFIG.budget.initial,
   totalProfit: 0,
   activeMode:  null,       // "mine" | "factory" | "salesHub" | null
-  facilities:  {},         // { regionId: facilityType }
+  facilities:  {},         // { regionId: facilityType[] }
   routes:      [],         // [{ from, to }]
 };
+
+// ── Facility helpers ──────────────────────────────────────────────────────────
+function regionHas(regionId, facType) {
+  return state.facilities[regionId]?.includes(facType) ?? false;
+}
+function anyHas(facType) {
+  return Object.values(state.facilities).some(arr => arr.includes(facType));
+}
 
 // ── Image bounds (accounts for object-fit: contain) ──────────────────────────
 
@@ -141,8 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleMode(fId) {
   // Enforce sequential build order
-  const hasMine    = Object.values(state.facilities).some(f => f === 'mine');
-  const hasFactory = Object.values(state.facilities).some(f => f === 'factory');
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
   if (fId === 'factory' && !hasMine) {
     toast('⛏️ Build a Mine first!'); return;
   }
@@ -169,8 +177,8 @@ function clearMode() {
 }
 
 function updateToolbarActive() {
-  const hasMine    = Object.values(state.facilities).some(f => f === 'mine');
-  const hasFactory = Object.values(state.facilities).some(f => f === 'factory');
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
 
   document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
   if (state.activeMode) {
@@ -192,11 +200,11 @@ function renderPins() {
   const b = getImageBounds();
 
   for (const [id, region] of Object.entries(CONFIG.regions)) {
-    const facility = state.facilities[id];
-    const fCfg     = facility ? CONFIG.facilities[facility] : null;
+    const facTypes = state.facilities[id] || [];
+    const emojis   = facTypes.map(f => CONFIG.facilities[f]?.emoji || '').join('');
 
     const pin = document.createElement('div');
-    pin.className = 'region-pin' + (facility ? ' has-facility' : '');
+    pin.className = 'region-pin' + (facTypes.length > 0 ? ' has-facility' : '');
     pin.id = `pin-${id}`;
     pin.style.left = (b.x + (region.mapPos.x / 100) * b.w) + 'px';
     pin.style.top  = (b.y + (region.mapPos.y / 100) * b.h) + 'px';
@@ -204,7 +212,7 @@ function renderPins() {
 
     pin.innerHTML = `
       <div class="pin-circle">${region.label.split(' ').map(w => w[0]).join('')}</div>
-      ${fCfg ? `<div class="pin-emoji">${fCfg.emoji}</div>` : ''}
+      ${emojis ? `<div class="pin-emoji">${emojis}</div>` : ''}
       <div class="pin-label">${region.label}</div>
     `;
 
@@ -221,6 +229,7 @@ function renderRoutes() {
   const b = getImageBounds();
 
   for (const route of state.routes) {
+    if (route.from === route.to) continue;  // same-region: no visual route needed
     const from = CONFIG.regions[route.from];
     const to   = CONFIG.regions[route.to];
     if (!from || !to) continue;
@@ -244,11 +253,11 @@ function onRegionClick(regionId) {
 }
 
 function showPopup(regionId) {
-  const region   = CONFIG.regions[regionId];
-  const existing = state.facilities[regionId];
-  const fCfg     = existing ? getFacilityCfg(regionId, existing) : null;
-  const mode     = state.activeMode;
-  const modeCfg  = mode ? getFacilityCfg(regionId, mode) : null;
+  const region       = CONFIG.regions[regionId];
+  const existingTypes = state.facilities[regionId] || [];
+  const mode         = state.activeMode;
+  const modeCfg      = mode ? getFacilityCfg(regionId, mode) : null;
+  const canBuild     = mode && !existingTypes.includes(mode);
 
   // Position popup near the pin
   const b    = getImageBounds();
@@ -272,8 +281,9 @@ function showPopup(regionId) {
   }
 
   // Header
+  const headerEmojis = existingTypes.map(f => CONFIG.facilities[f]?.emoji || '').join('');
   document.getElementById('popup-region-name').textContent =
-    `${fCfg ? fCfg.emoji + ' ' : ''}${region.label}`;
+    `${headerEmojis ? headerEmojis + ' ' : ''}${region.label}`;
 
   // Region stats
   document.getElementById('popup-demand').textContent = `${region.demand} units`;
@@ -281,38 +291,51 @@ function showPopup(regionId) {
 
   // Facility info section
   const infoEl = document.getElementById('popup-facility-info');
-  if (existing) {
-    // Show current facility stats
-    infoEl.innerHTML = `
-      <div class="popup-fac-title">${fCfg.emoji} ${fCfg.label} (built)</div>
-      <div class="popup-fac-row"><span>Build cost</span><span>$${fCfg.buildCost.toLocaleString()}</span></div>
-      <div class="popup-fac-row"><span>Op. cost</span><span>$${fCfg.opCostPerUnit.toLocaleString()}/unit</span></div>
-      ${fCfg.outputPerPeriod > 0 ? `<div class="popup-fac-row"><span>Max output</span><span>${fCfg.outputPerPeriod} units</span></div>` : ''}
+  let infoHtml = '';
+
+  // Show all existing facilities
+  for (const fType of existingTypes) {
+    const fCfg2 = getFacilityCfg(regionId, fType);
+    infoHtml += `
+      <div class="popup-fac-title">${fCfg2.emoji} ${fCfg2.label} (built)</div>
+      <div class="popup-fac-row"><span>Build cost</span><span>$${fCfg2.buildCost.toLocaleString()}</span></div>
+      <div class="popup-fac-row"><span>Op. cost</span><span>$${fCfg2.opCostPerUnit.toLocaleString()}/unit</span></div>
+      ${fCfg2.outputPerPeriod > 0 ? `<div class="popup-fac-row"><span>Max output</span><span>${fCfg2.outputPerPeriod} units</span></div>` : ''}
     `;
-  } else if (modeCfg) {
-    // Show the selected facility to build
-    infoEl.innerHTML = `
+  }
+
+  // Show build preview for selected mode (only if not already built here)
+  if (canBuild) {
+    infoHtml += `
       <div class="popup-fac-title">${modeCfg.emoji} Build ${modeCfg.label} here?</div>
       <div class="popup-fac-row"><span>Build cost</span><span style="color:#e57373">-$${modeCfg.buildCost.toLocaleString()}</span></div>
       <div class="popup-fac-row"><span>Op. cost</span><span>$${modeCfg.opCostPerUnit.toLocaleString()}/unit</span></div>
       ${modeCfg.outputPerPeriod > 0 ? `<div class="popup-fac-row"><span>Max output</span><span>${modeCfg.outputPerPeriod} units</span></div>` : ''}
       <div class="popup-fac-row"><span>Budget after</span><span style="color:${state.budget - modeCfg.buildCost >= 0 ? '#81c784' : '#e57373'}">$${(state.budget - modeCfg.buildCost).toLocaleString()}</span></div>
     `;
-  } else {
-    infoEl.innerHTML = `<div style="color:#888;font-size:0.78rem">Select a facility button below to build here.</div>`;
+  } else if (mode && existingTypes.includes(mode)) {
+    infoHtml += `<div style="color:#f9a825;font-size:0.78rem">⚠️ ${CONFIG.facilities[mode].label} already built here.</div>`;
+  } else if (existingTypes.length === 0) {
+    infoHtml += `<div style="color:#888;font-size:0.78rem">Select a facility button below to build here.</div>`;
   }
+
+  infoEl.innerHTML = infoHtml;
 
   // Action buttons
   const actEl = document.getElementById('popup-actions');
   actEl.innerHTML = '';
 
-  if (existing) {
+  // Remove buttons (one per existing facility)
+  for (const fType of existingTypes) {
     const delBtn = document.createElement('button');
     delBtn.className = 'popup-btn-delete';
-    delBtn.textContent = '🗑️ Remove';
-    delBtn.onclick = () => { removeFacility(regionId); closePopup(); };
+    delBtn.textContent = `🗑️ Remove ${CONFIG.facilities[fType].emoji}`;
+    delBtn.onclick = () => { removeFacility(regionId, fType); closePopup(); };
     actEl.appendChild(delBtn);
-  } else if (modeCfg) {
+  }
+
+  // Build button
+  if (canBuild) {
     const buildBtn = document.createElement('button');
     buildBtn.className = 'popup-btn-build';
     buildBtn.textContent = `✓ Build ${modeCfg.label}`;
@@ -335,7 +358,8 @@ function buildFacility(regionId) {
   if (!fCfg || state.budget < fCfg.buildCost) return;
 
   state.budget -= fCfg.buildCost;
-  state.facilities[regionId] = state.activeMode;
+  if (!state.facilities[regionId]) state.facilities[regionId] = [];
+  state.facilities[regionId].push(state.activeMode);
   autoConnectRoutes(regionId, state.activeMode);
   toast(`${fCfg.emoji} ${fCfg.label} built in ${CONFIG.regions[regionId].label}!`);
   clearMode();
@@ -345,12 +369,27 @@ function buildFacility(regionId) {
   updateToolbarActive();
 }
 
-function removeFacility(regionId) {
-  const existing = state.facilities[regionId];
-  if (!existing) return;
-  const fCfg = CONFIG.facilities[existing];
-  delete state.facilities[regionId];
-  state.routes = state.routes.filter(r => r.from !== regionId && r.to !== regionId);
+function removeFacility(regionId, facType) {
+  const arr = state.facilities[regionId];
+  if (!arr) return;
+  const idx = arr.indexOf(facType);
+  if (idx === -1) return;
+  arr.splice(idx, 1);
+  if (arr.length === 0) delete state.facilities[regionId];
+
+  // Remove only routes relevant to this facility type
+  if (facType === 'mine') {
+    state.routes = state.routes.filter(r => !(r.type === 'mine-factory' && r.from === regionId));
+  } else if (facType === 'factory') {
+    state.routes = state.routes.filter(r =>
+      !(r.type === 'mine-factory' && r.to === regionId) &&
+      !(r.type === 'factory-hub'  && r.from === regionId)
+    );
+  } else if (facType === 'salesHub') {
+    state.routes = state.routes.filter(r => !(r.type === 'factory-hub' && r.to === regionId));
+  }
+
+  const fCfg = CONFIG.facilities[facType];
   toast(`🗑️ ${fCfg.emoji} removed from ${CONFIG.regions[regionId].label}`);
   updateHUD();
   renderPins();
@@ -363,23 +402,20 @@ function removeFacility(regionId) {
 
 function autoConnectRoutes(newRegionId, facilityType) {
   if (facilityType === 'mine') {
-    // Connect to all existing factories (red)
-    for (const [rId, fId] of Object.entries(state.facilities)) {
-      if (rId === newRegionId) continue;
-      if (fId === 'factory') addRoute(newRegionId, rId, 'mine-factory');
+    // Connect to all existing factories (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('factory')) addRoute(newRegionId, rId, 'mine-factory');
     }
   } else if (facilityType === 'factory') {
-    // Connect from all existing mines (red) + to all existing hubs (blue)
-    for (const [rId, fId] of Object.entries(state.facilities)) {
-      if (rId === newRegionId) continue;
-      if (fId === 'mine')     addRoute(rId, newRegionId, 'mine-factory');
-      if (fId === 'salesHub') addRoute(newRegionId, rId, 'factory-hub');
+    // Connect from all existing mines + to all existing hubs (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('mine'))     addRoute(rId, newRegionId, 'mine-factory');
+      if (types.includes('salesHub')) addRoute(newRegionId, rId, 'factory-hub');
     }
   } else if (facilityType === 'salesHub') {
-    // Connect from all existing factories (blue)
-    for (const [rId, fId] of Object.entries(state.facilities)) {
-      if (rId === newRegionId) continue;
-      if (fId === 'factory') addRoute(rId, newRegionId, 'factory-hub');
+    // Connect from all existing factories (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('factory')) addRoute(rId, newRegionId, 'factory-hub');
     }
   }
 }
@@ -392,9 +428,9 @@ function addRoute(from, to, type) {
 // ── Stage announcement ────────────────────────────────────────────────────────
 
 function updateStageAnnouncement() {
-  const hasMine    = Object.values(state.facilities).some(f => f === 'mine');
-  const hasFactory = Object.values(state.facilities).some(f => f === 'factory');
-  const hasHub     = Object.values(state.facilities).some(f => f === 'salesHub');
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+  const hasHub     = anyHas('salesHub');
 
   if (!hasMine)         setAnnouncement(STAGES[0].text);
   else if (!hasFactory) setAnnouncement(STAGES[1].text);
@@ -409,9 +445,9 @@ function setAnnouncement(text) {
 // ── Simulate ──────────────────────────────────────────────────────────────────
 
 function onSimulate() {
-  const hasMine    = Object.values(state.facilities).some(f => f === 'mine');
-  const hasFactory = Object.values(state.facilities).some(f => f === 'factory');
-  const hasHub     = Object.values(state.facilities).some(f => f === 'salesHub');
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+  const hasHub     = anyHas('salesHub');
 
   if (!hasMine)    { toast('⛏️ Build a Mine first!');    return; }
   if (!hasFactory) { toast('🏭 Build a Factory first!'); return; }
@@ -439,8 +475,8 @@ function calculateResult() {
   for (const fhRoute of fhRoutes) {
     const factoryId = fhRoute.from;
     const hubId     = fhRoute.to;
-    if (state.facilities[factoryId] !== 'factory')  continue;
-    if (state.facilities[hubId]     !== 'salesHub') continue;
+    if (!regionHas(factoryId, 'factory'))  continue;
+    if (!regionHas(hubId,     'salesHub')) continue;
 
     // Find mines feeding this factory
     const feedingMines = sfRoutes.filter(r => r.to === factoryId);
@@ -608,8 +644,8 @@ function calcExpectedUnits() {
   for (const fhRoute of fhRoutes) {
     const factoryId = fhRoute.from;
     const hubId     = fhRoute.to;
-    if (state.facilities[factoryId] !== 'factory')  continue;
-    if (state.facilities[hubId]     !== 'salesHub') continue;
+    if (!regionHas(factoryId, 'factory'))  continue;
+    if (!regionHas(hubId,     'salesHub')) continue;
     const feedingMines = sfRoutes.filter(r => r.to === factoryId);
     if (feedingMines.length === 0) continue;
     const rawSupply  = feedingMines.reduce((s, r) => s + (getFacilityCfg(r.from, 'mine').outputPerPeriod ?? 0), 0);
