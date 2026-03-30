@@ -950,6 +950,10 @@ const STAGES = [
 // Stays false when running standalone (Netlify / GitHub Pages).
 let _streamlitActive = false;
 
+// Prevents submitScore() from firing more than once per simulation result.
+// Reset only when Python confirms a truly fresh state (rank=null, no error).
+let _submitted = false;
+
 // ── Game state ────────────────────────────────────────────────────────────────
 
 const state = {
@@ -1029,16 +1033,20 @@ document.addEventListener('DOMContentLoaded', () => {
       _streamlitActive = true;
       const args = (event.detail && event.detail.args) || {};
       if (args.rank != null) {
+        _submitted = true;
         document.getElementById('submit-section').style.display = 'none';
         document.getElementById('rank-result').style.display = 'block';
         document.getElementById('rank-text').innerHTML =
           `✅ <strong>${args.playerName}</strong> 님 등록 완료!<br>` +
           `🏆 현재 순위: <strong>${args.rank}등 / ${args.total}명</strong>`;
       } else if (args.submitError) {
+        _submitted = false;  // allow retry after error
         document.getElementById('submit-section').style.display = '';
         document.getElementById('rank-result').style.display = 'block';
         document.getElementById('rank-text').innerHTML = `❌ ${args.submitError}`;
       } else {
+        // Truly fresh state (new game or before any submit)
+        _submitted = false;
         document.getElementById('rank-result').style.display = 'none';
         document.getElementById('submit-section').style.display = '';
       }
@@ -1437,10 +1445,12 @@ function showResultOverlay(result) {
 }
 
 function submitScore(result) {
+  if (_submitted) return;  // already submitted this result — ignore duplicate calls
   const studentId = document.getElementById('student-id').value.trim();
   const name      = document.getElementById('player-name').value.trim();
   if (!studentId) { toast('학번을 입력하세요!'); return; }
   if (!name)      { toast('이름을 입력하세요!'); return; }
+  _submitted = true;  // lock immediately before any async work
 
   const sfRoutes = state.routes.filter(r => r.type === 'mine-factory');
   const fhRoutes = state.routes.filter(r => r.type === 'factory-hub');
@@ -1492,6 +1502,7 @@ function onRestart() {
   state.routes      = [];
 
   document.body.classList.remove('build-mode');
+  _submitted = false;
   document.getElementById('result-overlay').classList.add('hidden');
   document.getElementById('rank-result').style.display   = 'none';
   document.getElementById('submit-section').style.display = '';
