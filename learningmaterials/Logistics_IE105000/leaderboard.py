@@ -10,6 +10,11 @@ st.set_page_config(page_title="Global Logistics — Leaderboard", page_icon="�
 
 ADMIN_PASSWORD = "1234IE105000"
 DB_PATH = "leaderboard.db"
+here = Path(__file__).parent
+
+# Declare the game as a Streamlit component served from this directory.
+# Enables bidirectional JS ↔ Python communication.
+_game_component = components.declare_component("logistics_game", path=str(here))
 
 # ── DB helpers ─────────────────────────────────────────────────────────────────
 
@@ -121,27 +126,36 @@ st.divider()
 # ══════════════════════════════════════════════════════════════════════════════
 
 if st.session_state.tab == "🎮 Game":
-    here = Path(__file__).parent
-    style_css  = (here / "style.css").read_text(encoding="utf-8")
-    config_js  = (here / "config.js").read_text(encoding="utf-8")
-    game_js    = (here / "game.js").read_text(encoding="utf-8")
-    index_html = (here / "index.html").read_text(encoding="utf-8")
-
-    game_html = index_html
-    game_html = game_html.replace(
-        '<link rel="stylesheet" href="style.css" />',
-        f'<style>{style_css}\nbody{{height:680px!important;}}</style>'
-    )
-    game_html = game_html.replace(
-        '<script src="config.js"></script>',
-        f'<script>{config_js}</script>'
-    )
-    game_html = game_html.replace(
-        '<script src="game.js"></script>',
-        f'<script>{game_js}</script>'
+    comp_val = _game_component(
+        rank=st.session_state.get("submit_rank"),
+        total=st.session_state.get("submit_total"),
+        playerName=st.session_state.get("submit_name"),
+        key="game",
     )
 
-    components.html(game_html, height=680, scrolling=False)
+    if comp_val and isinstance(comp_val, dict):
+        t = comp_val.get("type")
+        if t == "submit_score":
+            add_score(
+                comp_val.get("name", ""),
+                comp_val.get("profit", 0),
+                comp_val.get("units", 0),
+                comp_val.get("chain", ""),
+                comp_val.get("studentId", ""),
+            )
+            df = get_scores()
+            profit = int(comp_val.get("profit", 0))
+            rank  = int((df["profit"] > profit).sum()) + 1
+            total = len(df)
+            st.session_state.submit_rank  = rank
+            st.session_state.submit_total = total
+            st.session_state.submit_name  = comp_val.get("name", "")
+            st.rerun()
+        elif t == "play_again":
+            st.session_state.pop("submit_rank",  None)
+            st.session_state.pop("submit_total", None)
+            st.session_state.pop("submit_name",  None)
+            st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 🏆  LEADERBOARD  (+ inline submit form when score data is present)

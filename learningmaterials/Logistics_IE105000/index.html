@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Logistics Game</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
 </head>
 <body>
 
@@ -58,6 +59,9 @@
           <input id="player-name" type="text" placeholder="이름 (Name)"        maxlength="40" />
         </div>
         <button id="btn-submit-score">🏆 Submit Score to Leaderboard</button>
+      </div>
+      <div id="rank-result" style="display:none;margin-top:14px;text-align:center;line-height:1.7">
+        <div id="rank-text"></div>
       </div>
       <button id="btn-restart">🔄 Play Again</button>
     </div>

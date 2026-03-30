@@ -414,6 +414,18 @@ body.build-mode .region-pin:not(.has-facility) .pin-circle {
 }
 #btn-submit-score:hover { background: #1976d2; }
 
+#rank-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: #0d2137;
+  border: 1px solid #4fc3f7;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  text-align: center;
+  color: #e8edf2;
+}
+
 #btn-restart {
   width: 100%;
   margin-top: 10px;

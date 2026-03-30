@@ -28,6 +28,11 @@ const STAGES = [
   },
 ];
 
+// ── Streamlit component communication ────────────────────────────────────────
+// Set to true once the first 'streamlit:render' event arrives from Streamlit.
+// Stays false when running standalone (Netlify / GitHub Pages).
+let _streamlitActive = false;
+
 // ── Game state ────────────────────────────────────────────────────────────────
 
 const state = {
@@ -98,6 +103,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Leaderboard wiring ────────────────────────────────────────────────────
   document.getElementById('btn-leaderboard').addEventListener('click', openLeaderboard);
+
+  // ── Streamlit component setup ─────────────────────────────────────────────
+  if (typeof Streamlit !== 'undefined') {
+    Streamlit.setComponentReady();
+    Streamlit.setFrameHeight(680);
+    window.addEventListener('streamlit:render', (event) => {
+      _streamlitActive = true;
+      const args = (event.detail && event.detail.args) || {};
+      if (args.rank != null) {
+        document.getElementById('submit-section').style.display = 'none';
+        document.getElementById('rank-result').style.display = 'block';
+        document.getElementById('rank-text').innerHTML =
+          `✅ <strong>${args.playerName}</strong> 님 등록 완료!<br>` +
+          `🏆 현재 순위: <strong>${args.rank}등 / ${args.total}명</strong>`;
+      } else {
+        document.getElementById('rank-result').style.display = 'none';
+        document.getElementById('submit-section').style.display = '';
+      }
+    });
+  }
 });
 
 // ── Mode (active build tool) ──────────────────────────────────────────────────
@@ -496,27 +521,35 @@ function submitScore(result) {
   if (!studentId) { toast('학번을 입력하세요!'); return; }
   if (!name)      { toast('이름을 입력하세요!'); return; }
 
-  const url = STREAMLIT();
-  if (!url || url === 'STREAMLIT_URL') { toast('Leaderboard not configured yet.'); return; }
-
   const sfRoutes = state.routes.filter(r => r.type === 'mine-factory');
   const fhRoutes = state.routes.filter(r => r.type === 'factory-hub');
   const chainParts = fhRoutes.map(fh => {
     const mines = sfRoutes.filter(r => r.to === fh.from).map(r => CONFIG.regions[r.from].label).join('+');
     return `${mines} → ${CONFIG.regions[fh.from].label} → ${CONFIG.regions[fh.to].label}`;
   });
+  const chain = chainParts.join(' | ');
+  const units = result.rows.reduce((s, r) => s + r.units, 0);
 
-  const params = new URLSearchParams({
-    autosubmit: '1',
-    studentId,
-    name,
-    profit: result.netProfit,
-    units:  result.rows.reduce((s, r) => s + r.units, 0),
-    chain:  chainParts.join(' | '),
-  });
-
-  window.open(`${url}/?${params}`, '_blank');
-  toast('🏆 리더보드에 등록 중…');
+  if (_streamlitActive) {
+    // Inside Streamlit — use bidirectional component communication
+    Streamlit.setComponentValue({
+      type: 'submit_score',
+      studentId,
+      name,
+      profit: result.netProfit,
+      units,
+      chain,
+    });
+    document.getElementById('submit-section').style.display = 'none';
+    toast('🏆 등록 중…');
+  } else {
+    // Standalone (Netlify / GitHub Pages) — open Streamlit in new tab
+    const url = STREAMLIT();
+    if (!url || url === 'STREAMLIT_URL') { toast('Leaderboard not configured yet.'); return; }
+    const params = new URLSearchParams({ autosubmit: '1', studentId, name, profit: result.netProfit, units, chain });
+    window.open(`${url}/?${params}`, '_blank');
+    toast('🏆 리더보드에 등록 중…');
+  }
 }
 
 // ── Leaderboard overlay ───────────────────────────────────────────────────────
@@ -537,10 +570,16 @@ function onRestart() {
 
   document.body.classList.remove('build-mode');
   document.getElementById('result-overlay').classList.add('hidden');
+  document.getElementById('rank-result').style.display   = 'none';
+  document.getElementById('submit-section').style.display = '';
   updateToolbarActive();
   updateHUD();
   renderPins();
   setAnnouncement(STAGES[0].text);
+
+  if (_streamlitActive) {
+    Streamlit.setComponentValue({ type: 'play_again' });
+  }
 }
 
 // ── HUD ───────────────────────────────────────────────────────────────────────
