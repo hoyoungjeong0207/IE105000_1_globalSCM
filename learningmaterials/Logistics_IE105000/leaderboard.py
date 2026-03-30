@@ -12,9 +12,30 @@ ADMIN_PASSWORD = "1234IE105000"
 DB_PATH = "leaderboard.db"
 here = Path(__file__).parent
 
-# Declare the game as a Streamlit component served from this directory.
-# Enables bidirectional JS ↔ Python communication.
-_game_component = components.declare_component("logistics_game", path=str(here))
+# ── Build a single-file inlined component for fast loading ────────────────────
+# declare_component(path=) serves static files separately (4+ requests).
+# Instead we pre-inline CSS/JS into one HTML and serve that from _comp/.
+def _build_inline_component(src: Path) -> Path:
+    comp_dir = src / "_comp"
+    comp_dir.mkdir(exist_ok=True)
+    html = (src / "index.html").read_text(encoding="utf-8")
+    html = html.replace(
+        '<link rel="stylesheet" href="style.css" />',
+        f'<style>{(src / "style.css").read_text(encoding="utf-8")}\nbody{{height:680px!important;}}</style>',
+    )
+    html = html.replace(
+        '<script src="config.js"></script>',
+        f'<script>{(src / "config.js").read_text(encoding="utf-8")}</script>',
+    )
+    html = html.replace(
+        '<script src="game.js"></script>',
+        f'<script>{(src / "game.js").read_text(encoding="utf-8")}</script>',
+    )
+    (comp_dir / "index.html").write_text(html, encoding="utf-8")
+    return comp_dir
+
+_comp_dir = _build_inline_component(here)
+_game_component = components.declare_component("logistics_game", path=str(_comp_dir))
 
 # ── DB helpers ─────────────────────────────────────────────────────────────────
 

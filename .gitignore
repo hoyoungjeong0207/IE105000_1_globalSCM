@@ -27,3 +27,14 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Streamlit DB
+learningmaterials/SCM_finalproject_v1/data/submissions.db
+
+# Generated component dirs (built at runtime by leaderboard.py)
+learningmaterials/Logistics_IE105000/_comp/
