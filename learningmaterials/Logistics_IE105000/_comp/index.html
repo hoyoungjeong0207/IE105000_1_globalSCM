@@ -1338,7 +1338,7 @@ function autoConnectRoutes(newRegionId, facilityType) {
 }
 
 function addRoute(from, to, type) {
-  const exists = state.routes.some(r => r.from === from && r.to === to);
+  const exists = state.routes.some(r => r.from === from && r.to === to && r.type === type);
   if (!exists) state.routes.push({ from, to, type });
 }
 
