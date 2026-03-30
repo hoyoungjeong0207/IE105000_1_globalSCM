@@ -82,22 +82,58 @@ def get_scores():
     conn.close()
     return df
 
-def add_score(name, profit, units, chain, student_id="", submit_id=""):
+RATE_LIMIT_SEC = 60
+
+def check_rate_limit(student_id):
+    """Return (allowed, remaining_seconds). Checks last submission time by student_id."""
+    if not student_id:
+        return True, 0
     conn = get_conn()
-    # DB-level duplicate guard: skip if this submit_id was already recorded
+    row = conn.execute(
+        "SELECT submitted_at FROM scores WHERE student_id = ? ORDER BY submitted_at DESC LIMIT 1",
+        (student_id.strip(),)
+    ).fetchone()
+    conn.close()
+    if row:
+        try:
+            last = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
+            elapsed = (datetime.now() - last).total_seconds()
+            if elapsed < RATE_LIMIT_SEC:
+                return False, int(RATE_LIMIT_SEC - elapsed)
+        except Exception:
+            pass
+    return True, 0
+
+def upsert_score(name, profit, units, chain, student_id="", submit_id=""):
+    """Insert new score, or UPDATE existing row if same student_id already exists."""
+    conn = get_conn()
+    # DB-level duplicate guard on submit_id
     if submit_id:
-        already = conn.execute(
-            "SELECT id FROM scores WHERE submit_id = ?", (submit_id,)
-        ).fetchone()
-        if already:
+        if conn.execute("SELECT id FROM scores WHERE submit_id = ?", (submit_id,)).fetchone():
             conn.close()
             return
-    conn.execute(
-        "INSERT INTO scores (submit_id, student_id, name, profit, units, chain) VALUES (?,?,?,?,?,?)",
-        (submit_id, student_id.strip(), name.strip(), int(profit), int(units), chain.strip())
-    )
+    existing = None
+    if student_id:
+        existing = conn.execute(
+            "SELECT id FROM scores WHERE student_id = ?", (student_id.strip(),)
+        ).fetchone()
+    if existing:
+        conn.execute(
+            "UPDATE scores SET submit_id=?, name=?, profit=?, units=?, chain=?, "
+            "submitted_at=datetime('now','localtime') WHERE id=?",
+            (submit_id, name.strip(), int(profit), int(units), chain.strip(), existing[0])
+        )
+    else:
+        conn.execute(
+            "INSERT INTO scores (submit_id, student_id, name, profit, units, chain) VALUES (?,?,?,?,?,?)",
+            (submit_id, student_id.strip(), name.strip(), int(profit), int(units), chain.strip())
+        )
     conn.commit()
     conn.close()
+
+# Keep add_score as alias for URL-param autosubmit path
+def add_score(name, profit, units, chain, student_id="", submit_id=""):
+    upsert_score(name, profit, units, chain, student_id, submit_id)
 
 def delete_score(sid):
     conn = get_conn()
@@ -168,6 +204,7 @@ if st.session_state.tab == "🎮 Game":
         rank=st.session_state.get("submit_rank"),
         total=st.session_state.get("submit_total"),
         playerName=st.session_state.get("submit_name"),
+        submitError=st.session_state.get("submit_error"),
         key="game",
     )
 
@@ -176,30 +213,37 @@ if st.session_state.tab == "🎮 Game":
         if t == "submit_score":
             submit_id = comp_val.get("submitId", "")
             if submit_id and submit_id != st.session_state.get("last_submit_id"):
-                add_score(
-                    comp_val.get("name", ""),
-                    comp_val.get("profit", 0),
-                    comp_val.get("units", 0),
-                    comp_val.get("chain", ""),
-                    comp_val.get("studentId", ""),
-                    submit_id=submit_id,
-                )
-                df = get_scores()
-                profit = int(comp_val.get("profit", 0))
-                rank  = int((df["profit"] > profit).sum()) + 1
-                total = len(df)
-                st.session_state.last_submit_id = submit_id
-                st.session_state.submit_rank    = rank
-                st.session_state.submit_total   = total
-                st.session_state.submit_name    = comp_val.get("name", "")
-                st.rerun()
+                st.session_state.last_submit_id = submit_id  # mark processed before anything else
+                student_id = comp_val.get("studentId", "")
+                allowed, remaining = check_rate_limit(student_id)
+                if not allowed:
+                    st.session_state.submit_error = f"⏱️ {remaining}초 후 다시 제출할 수 있습니다."
+                    st.rerun()
+                else:
+                    upsert_score(
+                        comp_val.get("name", ""),
+                        comp_val.get("profit", 0),
+                        comp_val.get("units", 0),
+                        comp_val.get("chain", ""),
+                        student_id,
+                        submit_id=submit_id,
+                    )
+                    df = get_scores()
+                    profit = int(comp_val.get("profit", 0))
+                    rank  = int((df["profit"] > profit).sum()) + 1
+                    total = len(df)
+                    st.session_state.pop("submit_error", None)
+                    st.session_state.submit_rank  = rank
+                    st.session_state.submit_total = total
+                    st.session_state.submit_name  = comp_val.get("name", "")
+                    st.rerun()
         elif t == "play_again":
             # Only rerun once to clear rank props; guard prevents infinite loop
-            # (comp_val stays as 'play_again' across reruns until JS sends a new value)
-            if "submit_rank" in st.session_state:
+            if "submit_rank" in st.session_state or "submit_error" in st.session_state:
                 st.session_state.pop("submit_rank",  None)
                 st.session_state.pop("submit_total", None)
                 st.session_state.pop("submit_name",  None)
+                st.session_state.pop("submit_error", None)
                 st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1034,6 +1034,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('rank-text').innerHTML =
           `✅ <strong>${args.playerName}</strong> 님 등록 완료!<br>` +
           `🏆 현재 순위: <strong>${args.rank}등 / ${args.total}명</strong>`;
+      } else if (args.submitError) {
+        document.getElementById('submit-section').style.display = '';
+        document.getElementById('rank-result').style.display = 'block';
+        document.getElementById('rank-text').innerHTML = `❌ ${args.submitError}`;
       } else {
         document.getElementById('rank-result').style.display = 'none';
         document.getElementById('submit-section').style.display = '';
