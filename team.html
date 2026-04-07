@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>연구진 - IO LAB</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="figures/logo.svg">
+    <style>
+        .nav-link {
+            color: var(--text-secondary) !important;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary) !important;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-primary);
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            transform: translateX(-3px);
+        }
+
+        .back-link svg {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-dropdown">
+                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="research.html" class="nav-link" data-i18n="nav.research">연구분야</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="research.html#logistics" data-i18n="nav.research.logistics">물류 최적화</a></li>
+                        <li><a href="research.html#network" data-i18n="nav.research.network">네트워크 최적화</a></li>
+                        <li><a href="research.html#production" data-i18n="nav.research.production">생산 최적화</a></li>
+                        <li><a href="research.html#nextgen" data-i18n="nav.research.nextgen">차세대 최적화</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="publications.html" class="nav-link" data-i18n="nav.publications">논문</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="publications.html#international" data-i18n="nav.pub.international">국제 논문</a></li>
+                        <li><a href="publications.html#domestic" data-i18n="nav.pub.domestic">국내 논문</a></li>
+                        <li><a href="publications.html#conference" data-i18n="nav.pub.conference">학회지</a></li>
+                        <li><a href="publications.html#patent" data-i18n="nav.pub.patent">특허</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="projects.html" class="nav-link" data-i18n="nav.projects">연구과제</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="projects.html#ongoing" data-i18n="nav.proj.ongoing">진행중인 과제</a></li>
+                        <li><a href="projects.html#completed" data-i18n="nav.proj.completed">완료한 과제</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-dropdown">
+                    <a href="learningmaterials/index.html" class="nav-link" data-i18n="nav.courses">교육자료</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="learningmaterials/index.html#ie315000" data-i18n="nav.courses.scm">공급사슬관리</a></li>
+                        <li><a href="learningmaterials/index.html#ie105000" data-i18n="nav.courses.ie">산업경영공학의 이해</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="news.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="news.html" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="photos.html" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="contact.html" data-i18n="nav.community.contact">연락처</a></li>
+                    </ul>
+                </li>
+            </ul>
+                        <div class="lang-toggle">
+                <span class="lang-option" data-lang="en" onclick="toggleLang('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-option" data-lang="ko" onclick="toggleLang('ko')">KO</span>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Team Page -->
+    <section class="section team">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                홈으로
+            </a>
+
+            <!-- 탭 -->
+            <div class="team-tabs" id="team-tabs">
+                <button class="team-tab active" data-tab="advisor" data-i18n="nav.team.advisor">지도교수</button>
+                <button class="team-tab" data-tab="members" data-i18n="nav.team.members">연구원</button>
+            </div>
+
+            <!-- 지도교수 탭 -->
+            <div class="team-tab-panel active" id="tab-advisor">
+                <div class="faculty-profile">
+                    <!-- 왼쪽: 사진 + 이름 + 링크 -->
+                    <div class="faculty-left">
+                        <img src="figures/정호영.jpg" alt="Ho Young Jeong" class="faculty-photo">
+                        <h2 class="faculty-name">Ho Young Jeong, Ph.D.</h2>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-dept">Department of Industrial &amp; Management Engineering<br>Kyung Hee University</p>
+                        <p class="faculty-contact-info">경희대학교 국제캠퍼스 우정원 6034<br>031-201-2430&nbsp;&nbsp;·&nbsp;&nbsp;ghy27@khu.ac.kr</p>
+                        <div class="faculty-links">
+                            <a href="mailto:ghy27@khu.ac.kr" class="faculty-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                ghy27@khu.ac.kr
+                            </a>
+                            <a href="https://scholar.google.com/citations?user=mYRD_GYAAAAJ&hl=en" target="_blank" rel="noopener" class="faculty-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.42a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                                Google Scholar
+                            </a>
+                            <a href="https://melodic-pithivier-5dfc2b.netlify.app/" target="_blank" rel="noopener" class="faculty-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                Personal Website
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 오른쪽: 상세 정보 -->
+                    <div class="faculty-right">
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Employment</h4>
+                            <table class="faculty-table">
+                                <tr>
+                                    <td class="ftd-role">Assistant Professor</td>
+                                    <td class="ftd-place" style="padding-left:20px">Kyung Hee University</td>
+                                    <td class="ftd-date">Mar 2026 – present</td>
+                                </tr>
+                                <tr>
+                                    <td class="ftd-role">Postdoctoral Researcher</td>
+                                    <td class="ftd-place" style="padding-left:20px">Korea University</td>
+                                    <td class="ftd-date">Nov 2023 – Mar 2026</td>
+                                </tr>
+                                <tr>
+                                    <td class="ftd-role">Postdoctoral Researcher</td>
+                                    <td class="ftd-place" style="padding-left:20px">Sogang University</td>
+                                    <td class="ftd-date">Apr 2022 – Oct 2023</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Education</h4>
+                            <table class="faculty-table">
+                                <tr>
+                                    <td class="ftd-degree">Ph.D.</td>
+                                    <td class="ftd-place">Purdue University &middot; Industrial Management Engineering</td>
+                                    <td class="ftd-date">May 2022</td>
+                                </tr>
+                                <tr>
+                                    <td class="ftd-degree">M.S.</td>
+                                    <td class="ftd-place">Purdue University &middot; Industrial Management Engineering</td>
+                                    <td class="ftd-date">May 2018</td>
+                                </tr>
+                                <tr>
+                                    <td class="ftd-degree">B.S.</td>
+                                    <td class="ftd-place">Inha University &middot; Industrial Management Engineering</td>
+                                    <td class="ftd-date">Jul 2016</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Research Interests</h4>
+                            <div class="faculty-tags">
+                                <span>Operations Research Applications</span>
+                                <span>Logistics Optimization</span>
+                                <span>Production Optimization</span>
+                                <span>Machine Learning</span>
+                                <span>Artificial Intelligence</span>
+                                <span>Quantum Computing</span>
+                            </div>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Journal Publications</h4>
+                            <ol class="faculty-pubs">
+                                <li><strong>Jeong, H. Y.</strong>, and Song, B. D. (2025). Optimization of Urban Logistics with Multi-Modal Systems: A Comprehensive Study of the Airship-Vehicle Routing Problem. <em>Transportation Research Part E: Logistics and Transportation Review</em>, 204, 104415. (SCIE, JCR 1.4%)</li>
+                                <li><strong>Jeong, H. Y.</strong>, and Song, B. D. (2025). Meta-Learning-Based Adaptive Operator Selection for Traveling Salesman Problem. <em>Applied Soft Computing</em>, 113930.</li>
+                                <li><strong>Jeong, H. Y.</strong>, and Song, B. D. (2025). Optimizing Urban Logistics: Vehicle Routing Problem with Underground Transportation. <em>IEEE Transactions on Intelligent Transportation Systems</em>. (SCIE, JCR 2.5%)</li>
+                                <li>Kim, Y., <strong>Jeong, H. Y.</strong>*, and Lee, S. (2024). Drone delivery problem with multi-flight level: Machine learning based solution approach. <em>Computers &amp; Industrial Engineering</em>, 197, 110565. (SCIE)</li>
+                                <li>Guo, F., <strong>Jeong, H. Y.</strong>, Park, D., Kim, G., Sung, B., and Kim, N. (2024). Numerical optimization of variable blank holder force trajectories in stamping process for multi-defect reduction. <em>Materials</em>, 17(11), 2578. (SCIE)</li>
+                                <li>Guo, F.†, <strong>Jeong, H. Y.</strong>†, Park, D., Sung, B., and Kim, N.* (2024). Numerical multi-objective optimization of segmented and variable blank holder force trajectories in deep drawing based on DNN-GA-MCS strategy. <em>The International Journal of Advanced Manufacturing Technology</em>, pp.1–24. (SCIE)</li>
+                                <li>Kim, Y., <strong>Jeong, H. Y.</strong>, Park, J., Kim, K., Kwon, H., Ju, G., and Kim, N. (2023). Optimizing process parameters for hot forging of Ti-6242 alloy: a machine learning and FEM simulation approach. <em>Journal of Materials Research and Technology</em>, 27, pp.8228–8243. (SCIE, JCR 6.1%)</li>
+                                <li>Kim, B., <strong>Jeong, H. Y.</strong>*, and Lee, S. (2023). Two-echelon collaborative routing problem with heterogeneous crowd-shippers. <em>Computers &amp; Operations Research</em>, 160, 106389. (SCIE)</li>
+                                <li><strong>Jeong, H. Y.</strong> and Choi, C.* (2023). Adaptive supply chain system design for fruit crops under climate change. <em>Systems</em>, 11(10), 514. (SSCI)</li>
+                                <li><strong>Jeong, H. Y.</strong> and Lee, S.* (2023). Drone routing problem with truck: Optimization and quantitative analysis. <em>Expert Systems with Applications</em>, 227, 120260. (SCIE, JCR 5.2%)</li>
+                                <li>Park, J., Kim, Y., <strong>Jeong, H. Y.</strong>, Kwon, H., Kwon, Y., and Kim, N.* (2023). Cogging process design of M50 bearing steel for billet quality. <em>Journal of Materials Research and Technology</em>, 26, pp.5576–5593. (SCIE, JCR 6.1%)</li>
+                                <li><strong>Jeong, H. Y.</strong>*, Kim, Y., Lee, S., Moreland, J., and Zhou, C. (2023). Disruption propagation and repair response in interdependent systems: Network model and simulation approach. <em>Simulation Modelling Practice and Theory</em>, 124, 102730. (SCIE)</li>
+                                <li><strong>Jeong, H. Y.</strong>, Park, J., Kim, Y., Shin, S. Y., and Kim, N.* (2023). Processing parameters optimization in hot forging of AISI 4340 steel using instability map and reinforcement learning. <em>Journal of Materials Research and Technology</em>, 23, pp.1995–2009. (SCIE, JCR 6.1%)</li>
+                                <li><strong>Jeong, H. Y.</strong>, Song, B. D.*, and Lee, S. (2022). Optimal scheduling and quantitative analysis for multi-flying warehouse scheduling problem: Amazon airborne fulfillment center. <em>Transportation Research Part C: Emerging Technologies</em>, 143, 103831. (SCIE, JCR 9.0%)</li>
+                                <li><strong>Jeong, H. Y.</strong>, Song, B. D.*, and Lee, S. (2020). The flying warehouse delivery system: A quantitative approach for the optimal operation policy of airborne fulfillment center. <em>IEEE Transactions on Intelligent Transportation Systems</em>, 22(12), pp.7521–7530. (SCIE, JCR 2.5%)</li>
+                                <li><strong>Jeong, H. Y.</strong>, David, J. Y., Min, B. C., and Lee, S.* (2020). The humanitarian flying warehouse. <em>Transportation Research Part E: Logistics and Transportation Review</em>, 136, 101901. (SCIE, JCR 1.4%)</li>
+                                <li><strong>Jeong, H. Y.</strong>, Song, B. D.*, and Lee, S. (2019). Truck-drone hybrid delivery routing: Payload-energy dependency and No-Fly zones. <em>International Journal of Production Economics</em>, 214, pp.220–233. (SCIE, JCR 2.4%)</li>
+                            </ol>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Working Papers</h4>
+                            <ul class="faculty-pubs">
+                                <li>(Under review) Choi, C., and <strong>Jeong, H. Y.</strong>*. Integrated approach for long term capacity expansion and operational scheduling of grid system: case study in MISO Region. <em>Sustainable Energy, Grids and Networks</em>.</li>
+                                <li>(In preparation) <strong>Jeong, H. Y.</strong>, and Song, B. D. Tariff-Aware Heuristic Optimization for Integrated Vehicle Routing and V2G/G2V Scheduling in Grid-Connected Electric Fleets. <em>IEEE Transactions on Transportation Electrification</em>.</li>
+                            </ul>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Conference Proceedings</h4>
+                            <ol class="faculty-pubs">
+                                <li>Kim, B., <strong>Jeong, H. Y.</strong> and Lee, S. Last-Mile Delivery Capacity Building in Pandemics Utilizing Community Resources. SSRN 4168513.</li>
+                                <li>Kim, Y., Jung, H. and Lee, S. (2021). Drone Delivery Vehicle Routing Problem with Multi-flight Level. <em>IFIP International Conference on Advances in Production Management Systems</em>. Springer, pp.43–51.</li>
+                                <li><strong>Jeong, H. Y.</strong> and Lee, S. (2021). Collaborative Hybrid Delivery System: Drone Routing Problem Assisted by Truck. <em>APMS 2021, IFIP WG 5.7 International Conference</em>, Nantes, France. Springer, pp.33–42.</li>
+                                <li>Kim, Y., <strong>Jeong, H. Y.</strong>, Park, J., Kim, K., Kwon, H., Ju, G. and Kim, N. Optimizing Process Parameters for Hot Closed Forging of Ti-6242 Alloy: A Machine Learning and FEM Simulation Approach. SSRN 4588071.</li>
+                                <li>Song, B. D., Jun, S., Jung, H. Y. and Lee, S. (2019). Movable Unmanned Aerial System: Optimization of System, Resource Design and Drone Routing. <em>Procedia Manufacturing</em>, 39, pp.300–306.</li>
+                                <li><strong>Jeong, H. Y.</strong> and Lee, S. (2019). Optimization of Vehicle-Carrier Routing: Mathematical Model and Comparison with Related Routing Models. <em>Procedia Manufacturing</em>, 39, pp.307–313.</li>
+                            </ol>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Presentations</h4>
+                            <ol class="faculty-pubs">
+                                <li><strong>Jeong, H. Y.</strong>, and Lee, S. (2019). Airship-based drone delivery system: Quantitative approach for managerial and operational guidelines. <em>INFORMS Annual Meeting</em>, Seattle, US.</li>
+                                <li><strong>Jeong, H. Y.</strong>, and Lee, S. (2019). Optimization of Vehicle-Carrier Routing Mathematical Model and Comparison with Related Routing Models. <em>ICPR25</em>, Chicago, US.</li>
+                                <li>Song, B. D., Jun, S., <strong>Jeong, H. Y.</strong>, and Lee, S. (2019). Movable Unmanned Aerial System Optimization of System Resource Design and Drone Routing. <em>ICPR25</em>, Chicago, US.</li>
+                                <li><strong>Jeong, H. Y.</strong>, and Lee, S. (2018). Vehicle-Carrier Routing Problem. <em>INFORMS Annual Meeting</em>, Phoenix, US.</li>
+                                <li><strong>Jeong, H. Y.</strong>, and Lee, S. (2018). Scheduling Hybrid Delivery System of Truck and Drone: Energy-Payload Dependency and No-Fly Zone. <em>IISE Annual Meeting</em>, Orlando, US.</li>
+                            </ol>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Research Experience</h4>
+                            <ul class="faculty-pubs">
+                                <li>(PI) Optimization of Smart V2G-Based Integrated Logistics and Power Grid Operations, Jan 2025 –. Funded by the Ministry of Education (NRF-02311960)</li>
+                                <li>Real-time Last-Mile Delivery Using Collaborative Ground-Aerial Movable Stations, Jan 2023 –. Funded by the Ministry of Science and ICT</li>
+                                <li>Development of Multipoint Servocontrol Die Cushion and Process Monitoring Module, Dec 2023. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)한빛산업</li>
+                                <li>Motor Housing for High-Quality Electric Vehicles through High-Function Molds, Dec 2023. Funded by the Ministry of SMEs and Startups; Associated with (주)대국정공</li>
+                                <li>Development of Material Forging and Manufacturing Process Technology, Dec 2023. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)케이피에프충주공장</li>
+                                <li>Development of Vibration Insulation Products and Process Technology for PBV, Jun 2023. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)코다코</li>
+                                <li>Development of Multipoint Servocontrol Die Cushion and Process Monitoring Module, Dec 2022. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)한빛산업</li>
+                                <li>Development of Manufacturing Technology for Multilateral Body Parts, Dec 2022. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)새한산업</li>
+                                <li>Development of Material Forging and Manufacturing Process Technology, Dec 2022. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)케이피에프충주공장</li>
+                                <li>Development of Integrated Housing for Powertrain with High Cooling Performance, Dec 2022. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)코벡</li>
+                                <li>Development of Vibration Insulation Products and Process Technology for PBV, Dec 2022. Funded by the Ministry of Trade, Industry and Energy; Associated with (주)코다코</li>
+                                <li>Visualization of Repair Operations Management for Networked Systems Resilience, May 2022. Funded by Navy Crane Center, IN, United States</li>
+                                <li>Resilience in Networked Systems Using Collaboration (RNSC) Project, May 2019. Funded by Navy Crane Center, IN, United States</li>
+                            </ul>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Skills</h4>
+                            <div class="faculty-tags">
+                                <span>Python</span><span>R</span><span>MATLAB</span><span>C#</span>
+                                <span>Gurobi</span><span>CPLEX</span><span>PyTorch</span><span>TensorFlow</span>
+                                <span>Abaqus</span><span>DEFORM</span><span>ARENA</span><span>Unity</span>
+                            </div>
+                        </div>
+
+                        <div class="faculty-section">
+                            <h4 class="faculty-section-title">Academic Award</h4>
+                            <p class="faculty-award">1st Runner-up Paper &mdash; International Conference on Production Research 25th (ICPR25), 2019</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 연구원 탭 -->
+            <div class="team-tab-panel" id="tab-members">
+                <div class="team-section-label" style="margin-top:0">대학원생</div>
+                <p class="team-empty">현재 대학원생이 없습니다.</p>
+
+                <div class="team-section-label">학부연구생</div>
+                <p class="team-empty">현재 학부연구생이 없습니다.</p>
+
+                <div class="team-section-label" id="alumni" data-i18n="nav.team.alumni">졸업생</div>
+                <p class="team-empty">현재 졸업생이 없습니다.</p>
+
+                <div class="join-banner" style="margin-top:40px">
+                    <div class="join-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
+                    </div>
+                    <div class="join-text">
+                        <h3>연구진 모집</h3>
+                        <p>운영과학과 최적화에 열정을 가진 동기부여된 연구자를 찾고 있습니다.</p>
+                    </div>
+                    <a href="https://forms.gle/1ZDdPq2ZmYhrwb4k6" target="_blank" rel="noopener noreferrer" class="btn btn-primary">지원하기</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                        <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
+                    </a>
+                    <p>지능형 최적화 연구실<br>경희대학교</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>빠른 링크</h4>
+                        <a href="index.html#news" data-i18n="nav.community.news">소식</a>
+                        <a href="index.html#publications" data-i18n="nav.publications">논문</a>
+                        <a href="projects.html" data-i18n="nav.projects">연구과제</a>
+                        <a href="team.html" data-i18n="nav.team">구성원</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>자료</h4>
+                        <a href="#">GitHub</a>
+                        <a href="learningmaterials/index.html" data-i18n="nav.courses">교육자료</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 IO LAB. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="lang.js"></script>
+    <script src="lang.js"></script>
+    <script>
+        // Team tabs
+        const teamTabs = document.querySelectorAll('.team-tab');
+        const teamPanels = document.querySelectorAll('.team-tab-panel');
+        teamTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                teamTabs.forEach(t => t.classList.remove('active'));
+                teamPanels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Nav anchor: switch to correct tab on load
+        function switchTabByHash() {
+            const hash = window.location.hash;
+            let tabName = 'advisor'; // default
+            if (hash === '#members' || hash === '#alumni') tabName = 'members';
+            else if (hash === '#advisor') tabName = 'advisor';
+
+            teamTabs.forEach(t => t.classList.remove('active'));
+            teamPanels.forEach(p => p.classList.remove('active'));
+            const target = document.querySelector('[data-tab="' + tabName + '"]');
+            if (target) {
+                target.classList.add('active');
+                document.getElementById('tab-' + tabName).classList.add('active');
+            }
+        }
+
+        switchTabByHash();
+        window.addEventListener('hashchange', switchTabByHash);
+    </script>
+</body>
+
+</html>

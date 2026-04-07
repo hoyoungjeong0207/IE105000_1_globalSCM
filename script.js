@@ -9,7 +9,7 @@ window.addEventListener('scroll', () => {
     } else {
         navbar.classList.remove('scrolled');
     }
-    
+
     // Show home button when about section is visible
     const aboutSection = document.querySelector('#about');
     const homeButton = document.querySelector('.home-button');
@@ -17,7 +17,7 @@ window.addEventListener('scroll', () => {
         const aboutTop = aboutSection.offsetTop;
         const aboutBottom = aboutTop + aboutSection.offsetHeight;
         const scrollPos = window.scrollY + window.innerHeight / 2;
-        
+
         if (scrollPos >= aboutTop && scrollPos <= aboutBottom) {
             homeButton.style.opacity = '0.7';
             homeButton.style.pointerEvents = 'auto';
@@ -44,7 +44,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
 // ===== Smooth Scroll for Navigation Links =====
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
@@ -60,13 +60,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ===== Counter Animation =====
 function animateCounters() {
     const counters = document.querySelectorAll('.stat-number');
-    
+
     counters.forEach(counter => {
         const target = parseInt(counter.getAttribute('data-count'));
         const duration = 2000;
         const step = target / (duration / 16);
         let current = 0;
-        
+
         const updateCounter = () => {
             current += step;
             if (current < target) {
@@ -76,7 +76,7 @@ function animateCounters() {
                 counter.textContent = target;
             }
         };
-        
+
         updateCounter();
     });
 }
@@ -129,12 +129,12 @@ filterBtns.forEach(btn => {
         // Remove active class from all buttons
         filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
+
         const filter = btn.getAttribute('data-filter');
-        
+
         pubItems.forEach(item => {
             const year = item.getAttribute('data-year');
-            
+
             if (filter === 'all' || year === filter) {
                 item.style.display = 'grid';
                 item.style.animation = 'fadeInUp 0.5s ease forwards';
@@ -151,20 +151,20 @@ const contactForm = document.querySelector('.contact-form');
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         // Get form data
         const formData = new FormData(contactForm);
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const subject = document.getElementById('subject').value;
         const message = document.getElementById('message').value;
-        
+
         // Create mailto link
-        const mailtoLink = `mailto:ghy27@korea.ac.kr?subject=${encodeURIComponent(subject + ' - ' + name)}&body=${encodeURIComponent('From: ' + name + '\nEmail: ' + email + '\n\n' + message)}`;
-        
+        const mailtoLink = `mailto:ghy27@khu.ac.kr?subject=${encodeURIComponent(subject + ' - ' + name)}&body=${encodeURIComponent('From: ' + name + '\nEmail: ' + email + '\n\n' + message)}`;
+
         // Open email client
         window.location.href = mailtoLink;
-        
+
         // Show success message
         showNotification('Opening your email client...');
     });
@@ -183,7 +183,7 @@ function showNotification(message) {
             <span>${message}</span>
         </div>
     `;
-    
+
     // Add styles
     notification.style.cssText = `
         position: fixed;
@@ -198,22 +198,22 @@ function showNotification(message) {
         animation: slideIn 0.5s ease;
         box-shadow: 0 10px 40px rgba(0, 212, 170, 0.3);
     `;
-    
+
     const content = notification.querySelector('.notification-content');
     content.style.cssText = `
         display: flex;
         align-items: center;
         gap: 12px;
     `;
-    
+
     const svg = notification.querySelector('svg');
     svg.style.cssText = `
         width: 20px;
         height: 20px;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.5s ease forwards';
@@ -253,7 +253,7 @@ document.addEventListener('mousemove', (e) => {
     const orbs = document.querySelectorAll('.gradient-orb');
     const x = e.clientX / window.innerWidth;
     const y = e.clientY / window.innerHeight;
-    
+
     orbs.forEach((orb, index) => {
         const speed = (index + 1) * 20;
         const xOffset = (x - 0.5) * speed;
@@ -283,7 +283,7 @@ setInterval(pulseNetwork, 4000);
 function typeWriter(element, text, speed = 50) {
     let i = 0;
     element.textContent = '';
-    
+
     function type() {
         if (i < text.length) {
             element.textContent += text.charAt(i);
@@ -291,7 +291,7 @@ function typeWriter(element, text, speed = 50) {
             setTimeout(type, speed);
         }
     }
-    
+
     type();
 }
 
@@ -300,13 +300,13 @@ const sections = document.querySelectorAll('section[id]');
 
 window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
-    
+
     sections.forEach(section => {
         const sectionHeight = section.offsetHeight;
         const sectionTop = section.offsetTop - 100;
         const sectionId = section.getAttribute('id');
         const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-        
+
         if (navLink) {
             if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
                 navLink.classList.add('active');
@@ -332,7 +332,7 @@ document.head.appendChild(activeStyle);
 // ===== Preloader (Optional) =====
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
-    
+
     // Trigger hero animations
     const heroElements = document.querySelectorAll('.hero-badge, .title-line, .hero-subtitle, .hero-cta, .hero-stats');
     heroElements.forEach(el => {
@@ -345,7 +345,7 @@ function handleMissingImages() {
     // Handle journal covers
     const journalCovers = document.querySelectorAll('.journal-cover, .journal-cover-full');
     journalCovers.forEach(img => {
-        img.addEventListener('error', function() {
+        img.addEventListener('error', function () {
             this.style.display = 'none';
             const cover = this.closest('.pub-cover, .pub-cover-full');
             if (cover) {
@@ -361,7 +361,7 @@ function handleMissingImages() {
                 }
             }
         });
-        
+
         // Check if src is empty or invalid on load
         if (!img.src || img.src.includes('undefined') || img.src === window.location.href || !img.complete) {
             // Check after a short delay to allow image to load
@@ -384,18 +384,18 @@ function handleMissingImages() {
             }, 100);
         }
     });
-    
+
     // Handle organization logos
     const orgLogos = document.querySelectorAll('.org-logo');
     orgLogos.forEach(img => {
-        img.addEventListener('error', function() {
+        img.addEventListener('error', function () {
             this.style.display = 'none';
             const logo = this.closest('.timeline-logo');
             if (logo) {
                 logo.style.display = 'none';
             }
         });
-        
+
         // Check if src is empty or invalid on load
         if (!img.src || img.src.includes('undefined') || img.src === window.location.href || !img.complete) {
             setTimeout(() => {
@@ -417,6 +417,95 @@ window.addEventListener('load', () => {
 });
 
 // ===== Console Easter Egg =====
-console.log('%c🔬 ORLAB - Operations Research Laboratory', 'font-size: 20px; font-weight: bold; color: #00D4AA;');
-console.log('%cInterested in our research? Contact us at ghy27@korea.ac.kr', 'font-size: 12px; color: #7B68EE;');
+console.log('%c🔬 IO LAB - Intelligent Optimization LAB', 'font-size: 20px; font-weight: bold; color: #00D4AA;');
+console.log('%cInterested in our research? Contact us at ghy27@khu.ac.kr', 'font-size: 12px; color: #7B68EE;');
 
+// ===== Interactive Research Fields (from orlab) =====
+const researchFields = [
+    {
+        id: '01',
+        title: '도시 물류 최적화',
+        description: '다중 교통수단 시스템, 지하 물류 네트워크, 비행선-차량 경로 문제를 통한 지속가능한 도시 물류 연구.'
+    },
+    {
+        id: '02',
+        title: '드론 배송 시스템',
+        description: '비행 창고 운영, 트럭-드론 하이브리드 배송, 다중 비행 고도 최적화, 그리고 적재량-에너지 의존성 모델링.'
+    },
+    {
+        id: '03',
+        title: '메타러닝 및 적응형 AI',
+        description: '조합 최적화를 위한 적응형 연산자 선택, 공정 제어를 위한 강화학습, 신경망 기반 해법 접근법.'
+    },
+    {
+        id: '04',
+        title: '지능형 제조',
+        description: '열간 단조 공정 파라미터 최적화, 스탬핑 결함 감소, 머신러닝 통합 FEM 시뮬레이션.'
+    }
+];
+
+function initResearchFields() {
+    const fieldItems = document.querySelectorAll('.research-field-item');
+    const images = document.querySelectorAll('.research-image');
+    const imageContent = document.querySelector('.research-image-content');
+
+    if (fieldItems.length === 0) return;
+
+    let activeId = '01';
+
+    function updateActiveField(fieldId) {
+        activeId = fieldId;
+
+        // Update field items
+        fieldItems.forEach(item => {
+            const itemId = item.getAttribute('data-field-id');
+            if (itemId === fieldId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Update images
+        images.forEach(img => {
+            const imgId = img.getAttribute('data-field-id');
+            if (imgId === fieldId) {
+                img.classList.add('active');
+            } else {
+                img.classList.remove('active');
+            }
+        });
+
+        // Update image content
+        const activeField = researchFields.find(f => f.id === fieldId);
+        if (activeField && imageContent) {
+            const titleEl = imageContent.querySelector('.research-image-title');
+            const descEl = imageContent.querySelector('.research-image-description');
+            if (titleEl) titleEl.textContent = activeField.title;
+            if (descEl) descEl.textContent = activeField.description;
+        }
+    }
+
+    // Add event listeners
+    fieldItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            const fieldId = item.getAttribute('data-field-id');
+            updateActiveField(fieldId);
+        });
+
+        item.addEventListener('click', () => {
+            const fieldId = item.getAttribute('data-field-id');
+            updateActiveField(fieldId);
+        });
+    });
+
+    // Initialize with first field
+    updateActiveField('01');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initResearchFields);
+} else {
+    initResearchFields();
+}

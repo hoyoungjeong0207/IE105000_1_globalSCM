@@ -1,0 +1,676 @@
+/**
+ * game.js — Core game logic.
+ * All data comes from CONFIG (config.js).
+ */
+
+// ── Streamlit leaderboard helper ──────────────────────────────────────────────
+
+const STREAMLIT = () => CONFIG.leaderboard.streamlitUrl;
+
+// ── Stage announcements ───────────────────────────────────────────────────────
+
+const STAGES = [
+  {
+    id: "needMine",
+    text: "⛏️ Step 1: Build a Mine — select Mine below, then click a region to extract raw materials",
+  },
+  {
+    id: "needFactory",
+    text: "🏭 Step 2: Build a Factory — it will receive raw materials from your Mine",
+  },
+  {
+    id: "needHub",
+    text: "🏪 Step 3: Build a Sales Hub — finished goods will be shipped here to sell",
+  },
+  {
+    id: "ready",
+    text: "✅ Chain complete: ⛏️ Mine →🔴→ 🏭 Factory →🔵→ 🏪 Hub   Click ▶ Simulate!",
+  },
+];
+
+// ── Streamlit component communication ────────────────────────────────────────
+// Set to true once the first 'streamlit:render' event arrives from Streamlit.
+// Stays false when running standalone (Netlify / GitHub Pages).
+let _streamlitActive = false;
+
+// Prevents submitScore() from firing more than once per simulation result.
+// Reset only when Python confirms a truly fresh state (rank=null, no error).
+let _submitted = false;
+
+// ── Game state ────────────────────────────────────────────────────────────────
+
+const state = {
+  budget:      CONFIG.budget.initial,
+  totalProfit: 0,
+  activeMode:  null,       // "mine" | "factory" | "salesHub" | null
+  facilities:  {},         // { regionId: facilityType[] }
+  routes:      [],         // [{ from, to }]
+};
+
+// ── Facility helpers ──────────────────────────────────────────────────────────
+function regionHas(regionId, facType) {
+  return state.facilities[regionId]?.includes(facType) ?? false;
+}
+function anyHas(facType) {
+  return Object.values(state.facilities).some(arr => arr.includes(facType));
+}
+
+// ── Image bounds (accounts for object-fit: contain) ──────────────────────────
+
+function getImageBounds() {
+  const container = document.getElementById('map-container');
+  const img       = document.getElementById('map-img');
+  const cW = container.offsetWidth;
+  const cH = container.offsetHeight;
+  const iW = img.naturalWidth  || 1280;
+  const iH = img.naturalHeight || 640;
+  const imgRatio = iW / iH;
+  const conRatio = cW / cH;
+
+  let w, h, x, y;
+  if (imgRatio > conRatio) {
+    w = cW; h = cW / imgRatio;
+    x = 0;  y = (cH - h) / 2;
+  } else {
+    h = cH; w = cH * imgRatio;
+    y = 0;  x = (cW - w) / 2;
+  }
+  return { x, y, w, h };
+}
+
+// ── Facility config helper (merges global label/emoji with per-region costs) ──
+
+function getFacilityCfg(regionId, facType) {
+  const base     = CONFIG.facilities[facType] ?? {};
+  const override = CONFIG.regions[regionId]?.facilityCosts?.[facType] ?? {};
+  return { ...base, ...override };
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Toolbar cost labels show "varies" since costs differ by region
+  for (const fId of Object.keys(CONFIG.facilities)) {
+    const el = document.getElementById(`cost-${fId}`);
+    if (el) el.textContent = fId === 'salesHub' ? 'varies' : 'varies';
+  }
+
+  // Re-render pins when image loads (to get correct naturalWidth/Height)
+  const img = document.getElementById('map-img');
+  if (img.complete) { renderPins(); } else { img.addEventListener('load', renderPins); }
+
+  // Re-render on resize
+  window.addEventListener('resize', () => { renderPins(); });
+
+  updateHUD();
+  setAnnouncement(STAGES[0].text);
+
+  // Toolbar buttons
+  for (const [fId] of Object.entries(CONFIG.facilities)) {
+    document.getElementById(`btn-${fId}`)
+      ?.addEventListener('click', () => toggleMode(fId));
+  }
+  document.getElementById('btn-simulate').addEventListener('click', onSimulate);
+  document.getElementById('btn-restart').addEventListener('click', onRestart);
+
+  // ── Leaderboard wiring ────────────────────────────────────────────────────
+  document.getElementById('btn-leaderboard').addEventListener('click', openLeaderboard);
+
+  // ── Streamlit component setup ─────────────────────────────────────────────
+  if (typeof Streamlit !== 'undefined') {
+    Streamlit.setComponentReady();
+    Streamlit.setFrameHeight(680);
+    window.addEventListener('streamlit:render', (event) => {
+      _streamlitActive = true;
+      const args = (event.detail && event.detail.args) || {};
+      if (args.rank != null) {
+        _submitted = true;
+        document.getElementById('submit-section').style.display = 'none';
+        document.getElementById('rank-result').style.display = 'block';
+        document.getElementById('rank-text').innerHTML =
+          `✅ <strong>${args.playerName}</strong> 님 등록 완료!<br>` +
+          `🏆 현재 순위: <strong>${args.rank}등 / ${args.total}명</strong>`;
+      } else if (args.submitError) {
+        _submitted = false;  // allow retry after error
+        document.getElementById('submit-section').style.display = '';
+        document.getElementById('rank-result').style.display = 'block';
+        document.getElementById('rank-text').innerHTML = `❌ ${args.submitError}`;
+      } else {
+        // Truly fresh state (new game or before any submit)
+        _submitted = false;
+        document.getElementById('rank-result').style.display = 'none';
+        document.getElementById('submit-section').style.display = '';
+      }
+    });
+  }
+});
+
+// ── Mode (active build tool) ──────────────────────────────────────────────────
+
+function toggleMode(fId) {
+  // Enforce sequential build order
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+  if (fId === 'factory' && !hasMine) {
+    toast('⛏️ Build a Mine first!'); return;
+  }
+  if (fId === 'salesHub' && !hasFactory) {
+    toast('🏭 Build a Factory first!'); return;
+  }
+
+  if (state.activeMode === fId) {
+    state.activeMode = null;
+    document.body.classList.remove('build-mode');
+  } else {
+    state.activeMode = fId;
+    document.body.classList.add('build-mode');
+    const fCfg = CONFIG.facilities[fId];
+    toast(`${fCfg.emoji} ${fCfg.label} selected — click a region to place it`);
+  }
+  updateToolbarActive();
+}
+
+function clearMode() {
+  state.activeMode = null;
+  document.body.classList.remove('build-mode');
+  updateToolbarActive();
+}
+
+function updateToolbarActive() {
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  if (state.activeMode) {
+    document.getElementById(`btn-${state.activeMode}`)?.classList.add('active');
+  }
+
+  // Grey out buttons whose prerequisites aren't met
+  const btnFactory  = document.getElementById('btn-factory');
+  const btnSalesHub = document.getElementById('btn-salesHub');
+  if (btnFactory)  btnFactory.classList.toggle('locked', !hasMine);
+  if (btnSalesHub) btnSalesHub.classList.toggle('locked', !hasFactory);
+}
+
+// ── Pins ──────────────────────────────────────────────────────────────────────
+
+function renderPins() {
+  const container = document.getElementById('map-pins');
+  container.innerHTML = '';
+  const b = getImageBounds();
+
+  for (const [id, region] of Object.entries(CONFIG.regions)) {
+    const facTypes = state.facilities[id] || [];
+    const emojis   = facTypes.map(f => CONFIG.facilities[f]?.emoji || '').join('');
+
+    const pin = document.createElement('div');
+    pin.className = 'region-pin' + (facTypes.length > 0 ? ' has-facility' : '');
+    pin.id = `pin-${id}`;
+    pin.style.left = (b.x + (region.mapPos.x / 100) * b.w) + 'px';
+    pin.style.top  = (b.y + (region.mapPos.y / 100) * b.h) + 'px';
+    pin.dataset.region = id;
+
+    pin.innerHTML = `
+      <div class="pin-circle">${region.label.split(' ').map(w => w[0]).join('')}</div>
+      ${emojis ? `<div class="pin-emoji">${emojis}</div>` : ''}
+      <div class="pin-label">${region.label}</div>
+    `;
+
+    pin.addEventListener('click', () => onRegionClick(id));
+    container.appendChild(pin);
+  }
+
+  renderRoutes();
+}
+
+function renderRoutes() {
+  const svg = document.getElementById('route-svg');
+  svg.innerHTML = '';
+  const b = getImageBounds();
+
+  for (const route of state.routes) {
+    if (route.from === route.to) continue;  // same-region: no visual route needed
+    const from = CONFIG.regions[route.from];
+    const to   = CONFIG.regions[route.to];
+    if (!from || !to) continue;
+
+    const cls = route.type === 'mine-factory' ? 'route-mine-factory' : 'route-factory-hub';
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', b.x + (from.mapPos.x / 100) * b.w);
+    line.setAttribute('y1', b.y + (from.mapPos.y / 100) * b.h);
+    line.setAttribute('x2', b.x + (to.mapPos.x   / 100) * b.w);
+    line.setAttribute('y2', b.y + (to.mapPos.y   / 100) * b.h);
+    line.setAttribute('class', cls);
+    svg.appendChild(line);
+  }
+}
+
+// ── Region click — show popup ─────────────────────────────────────────────────
+
+function onRegionClick(regionId) {
+  showPopup(regionId);
+}
+
+function showPopup(regionId) {
+  const region       = CONFIG.regions[regionId];
+  const existingTypes = state.facilities[regionId] || [];
+  const mode         = state.activeMode;
+  const modeCfg      = mode ? getFacilityCfg(regionId, mode) : null;
+  const canBuild     = mode && !existingTypes.includes(mode);
+
+  // Position popup near the pin
+  const b    = getImageBounds();
+  const pinX = b.x + (region.mapPos.x / 100) * b.w;
+  const pinY = b.y + (region.mapPos.y / 100) * b.h;
+  const popup = document.getElementById('region-popup');
+  const mapEl = document.getElementById('map-container');
+
+  // On mobile use CSS bottom-sheet positioning; on desktop float near pin
+  if (window.innerWidth > 600) {
+    let left = pinX + 18;
+    let top  = pinY - 20;
+    if (left + 270 > mapEl.offsetWidth)  left = pinX - 278;
+    if (top  + 240 > mapEl.offsetHeight) top  = mapEl.offsetHeight - 245;
+    if (top < 10) top = 10;
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+  } else {
+    popup.style.left = '';
+    popup.style.top  = '';
+  }
+
+  // Header
+  const headerEmojis = existingTypes.map(f => CONFIG.facilities[f]?.emoji || '').join('');
+  document.getElementById('popup-region-name').textContent =
+    `${headerEmojis ? headerEmojis + ' ' : ''}${region.label}`;
+
+  // Region stats
+  document.getElementById('popup-demand').textContent = `${region.demand} units`;
+  document.getElementById('popup-price').textContent  = `$${region.marketPrice}/unit`;
+
+  // Facility info section
+  const infoEl = document.getElementById('popup-facility-info');
+  let infoHtml = '';
+
+  // Show all existing facilities
+  for (const fType of existingTypes) {
+    const fCfg2 = getFacilityCfg(regionId, fType);
+    infoHtml += `
+      <div class="popup-fac-title">${fCfg2.emoji} ${fCfg2.label} (built)</div>
+      <div class="popup-fac-row"><span>Build cost</span><span>$${fCfg2.buildCost.toLocaleString()}</span></div>
+      <div class="popup-fac-row"><span>Op. cost</span><span>$${fCfg2.opCostPerUnit.toLocaleString()}/unit</span></div>
+      ${fCfg2.outputPerPeriod > 0 ? `<div class="popup-fac-row"><span>Max output</span><span>${fCfg2.outputPerPeriod} units</span></div>` : ''}
+    `;
+  }
+
+  // Show build preview for selected mode (only if not already built here)
+  if (canBuild) {
+    infoHtml += `
+      <div class="popup-fac-title">${modeCfg.emoji} Build ${modeCfg.label} here?</div>
+      <div class="popup-fac-row"><span>Build cost</span><span style="color:#e57373">-$${modeCfg.buildCost.toLocaleString()}</span></div>
+      <div class="popup-fac-row"><span>Op. cost</span><span>$${modeCfg.opCostPerUnit.toLocaleString()}/unit</span></div>
+      ${modeCfg.outputPerPeriod > 0 ? `<div class="popup-fac-row"><span>Max output</span><span>${modeCfg.outputPerPeriod} units</span></div>` : ''}
+      <div class="popup-fac-row"><span>Budget after</span><span style="color:${state.budget - modeCfg.buildCost >= 0 ? '#81c784' : '#e57373'}">$${(state.budget - modeCfg.buildCost).toLocaleString()}</span></div>
+    `;
+  } else if (mode && existingTypes.includes(mode)) {
+    infoHtml += `<div style="color:#f9a825;font-size:0.78rem">⚠️ ${CONFIG.facilities[mode].label} already built here.</div>`;
+  } else if (existingTypes.length === 0) {
+    infoHtml += `<div style="color:#888;font-size:0.78rem">Select a facility button below to build here.</div>`;
+  }
+
+  infoEl.innerHTML = infoHtml;
+
+  // Action buttons
+  const actEl = document.getElementById('popup-actions');
+  actEl.innerHTML = '';
+
+  // Remove buttons (one per existing facility)
+  for (const fType of existingTypes) {
+    const delBtn = document.createElement('button');
+    delBtn.className = 'popup-btn-delete';
+    delBtn.textContent = `🗑️ Remove ${CONFIG.facilities[fType].emoji}`;
+    delBtn.onclick = () => { removeFacility(regionId, fType); closePopup(); };
+    actEl.appendChild(delBtn);
+  }
+
+  // Build button
+  if (canBuild) {
+    const buildBtn = document.createElement('button');
+    buildBtn.className = 'popup-btn-build';
+    buildBtn.textContent = `✓ Build ${modeCfg.label}`;
+    buildBtn.disabled = state.budget < modeCfg.buildCost;
+    buildBtn.onclick = () => { buildFacility(regionId); closePopup(); };
+    actEl.appendChild(buildBtn);
+  }
+
+  popup.classList.remove('hidden');
+}
+
+function closePopup() {
+  document.getElementById('region-popup').classList.add('hidden');
+}
+
+// ── Build / Remove ────────────────────────────────────────────────────────────
+
+function buildFacility(regionId) {
+  const fCfg = getFacilityCfg(regionId, state.activeMode);
+  if (!fCfg || state.budget < fCfg.buildCost) return;
+
+  state.budget -= fCfg.buildCost;
+  if (!state.facilities[regionId]) state.facilities[regionId] = [];
+  state.facilities[regionId].push(state.activeMode);
+  autoConnectRoutes(regionId, state.activeMode);
+  toast(`${fCfg.emoji} ${fCfg.label} built in ${CONFIG.regions[regionId].label}!`);
+  clearMode();
+  updateHUD();
+  renderPins();
+  updateStageAnnouncement();
+  updateToolbarActive();
+}
+
+function removeFacility(regionId, facType) {
+  const arr = state.facilities[regionId];
+  if (!arr) return;
+  const idx = arr.indexOf(facType);
+  if (idx === -1) return;
+  arr.splice(idx, 1);
+  if (arr.length === 0) delete state.facilities[regionId];
+
+  // Remove only routes relevant to this facility type
+  if (facType === 'mine') {
+    state.routes = state.routes.filter(r => !(r.type === 'mine-factory' && r.from === regionId));
+  } else if (facType === 'factory') {
+    state.routes = state.routes.filter(r =>
+      !(r.type === 'mine-factory' && r.to === regionId) &&
+      !(r.type === 'factory-hub'  && r.from === regionId)
+    );
+  } else if (facType === 'salesHub') {
+    state.routes = state.routes.filter(r => !(r.type === 'factory-hub' && r.to === regionId));
+  }
+
+  const fCfg = CONFIG.facilities[facType];
+  toast(`🗑️ ${fCfg.emoji} removed from ${CONFIG.regions[regionId].label}`);
+  updateHUD();
+  renderPins();
+  updateStageAnnouncement();
+  updateToolbarActive();
+}
+
+// ── Auto-route ────────────────────────────────────────────────────────────────
+// Chain: Mine --[red]--> Factory --[blue]--> Sales Hub
+
+function autoConnectRoutes(newRegionId, facilityType) {
+  if (facilityType === 'mine') {
+    // Connect to all existing factories (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('factory')) addRoute(newRegionId, rId, 'mine-factory');
+    }
+  } else if (facilityType === 'factory') {
+    // Connect from all existing mines + to all existing hubs (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('mine'))     addRoute(rId, newRegionId, 'mine-factory');
+      if (types.includes('salesHub')) addRoute(newRegionId, rId, 'factory-hub');
+    }
+  } else if (facilityType === 'salesHub') {
+    // Connect from all existing factories (including same region)
+    for (const [rId, types] of Object.entries(state.facilities)) {
+      if (types.includes('factory')) addRoute(rId, newRegionId, 'factory-hub');
+    }
+  }
+}
+
+function addRoute(from, to, type) {
+  const exists = state.routes.some(r => r.from === from && r.to === to && r.type === type);
+  if (!exists) state.routes.push({ from, to, type });
+}
+
+// ── Stage announcement ────────────────────────────────────────────────────────
+
+function updateStageAnnouncement() {
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+  const hasHub     = anyHas('salesHub');
+
+  if (!hasMine)         setAnnouncement(STAGES[0].text);
+  else if (!hasFactory) setAnnouncement(STAGES[1].text);
+  else if (!hasHub)     setAnnouncement(STAGES[2].text);
+  else                  setAnnouncement(STAGES[3].text);
+}
+
+function setAnnouncement(text) {
+  document.getElementById('announcement-text').textContent = text;
+}
+
+// ── Simulate ──────────────────────────────────────────────────────────────────
+
+function onSimulate() {
+  const hasMine    = anyHas('mine');
+  const hasFactory = anyHas('factory');
+  const hasHub     = anyHas('salesHub');
+
+  if (!hasMine)    { toast('⛏️ Build a Mine first!');    return; }
+  if (!hasFactory) { toast('🏭 Build a Factory first!'); return; }
+  if (!hasHub)     { toast('🏪 Build a Sales Hub first!'); return; }
+
+  const result = calculateResult();
+  state.totalProfit = result.netProfit;
+  updateHUD();
+  showResultOverlay(result);
+}
+
+function calculateResult() {
+  let revenue       = 0;
+  let opCost        = 0;
+  let transportCost = 0;
+  const rows        = [];
+
+  // Operating costs computed per-unit at the end (accumulated below)
+
+  // Two-stage chain: Mine → Factory → Sales Hub
+  // For each Factory→Hub route, check if the factory has at least one Mine feeding it
+  const sfRoutes = state.routes.filter(r => r.type === 'mine-factory');
+  const fhRoutes = state.routes.filter(r => r.type === 'factory-hub');
+
+  for (const fhRoute of fhRoutes) {
+    const factoryId = fhRoute.from;
+    const hubId     = fhRoute.to;
+    if (!regionHas(factoryId, 'factory'))  continue;
+    if (!regionHas(hubId,     'salesHub')) continue;
+
+    // Find mines feeding this factory
+    const feedingMines = sfRoutes.filter(r => r.to === factoryId);
+    if (feedingMines.length === 0) continue;  // factory has no raw material
+
+    // Raw material available = sum of per-region mine outputs
+    const rawSupply = feedingMines.reduce((sum, r) => {
+      return sum + (getFacilityCfg(r.from, 'mine').outputPerPeriod ?? 0);
+    }, 0);
+
+    const factoryCfg = getFacilityCfg(factoryId, 'factory');
+    const hubRegion  = CONFIG.regions[hubId];
+    const units      = Math.min(rawSupply, factoryCfg.outputPerPeriod, hubRegion.demand);
+
+    // Transport: average mine→factory cost + factory→hub cost
+    const mineTransportCost = feedingMines.reduce((sum, r) => {
+      return sum + (CONFIG.transportCost[r.from]?.[factoryId] ?? 0);
+    }, 0) / feedingMines.length;
+    const hubTransportCost = CONFIG.transportCost[factoryId]?.[hubId] ?? 0;
+
+    const rev   = units * hubRegion.marketPrice;
+    const trans = units * (mineTransportCost + hubTransportCost);
+
+    // Per-unit operating costs: avg mine op + factory op + hub op
+    const mineOpPerUnit = feedingMines.reduce((sum, r) => {
+      return sum + (getFacilityCfg(r.from, 'mine').opCostPerUnit ?? 0);
+    }, 0) / feedingMines.length;
+    const facOpPerUnit = getFacilityCfg(factoryId, 'factory').opCostPerUnit ?? 0;
+    const hubOpPerUnit = getFacilityCfg(hubId, 'salesHub').opCostPerUnit ?? 0;
+    const op = units * (mineOpPerUnit + facOpPerUnit + hubOpPerUnit);
+
+    revenue       += rev;
+    transportCost += trans;
+    opCost        += op;
+
+    const mineLabel = feedingMines.map(r => CONFIG.regions[r.from].label).join(', ');
+    rows.push({
+      label:     `${mineLabel} → ${CONFIG.regions[factoryId].label} → ${hubRegion.label}`,
+      units,
+      revenue:   rev,
+      transport: trans,
+      opCost:    op,
+    });
+  }
+
+  return {
+    revenue,
+    opCost,
+    transportCost,
+    netProfit: revenue - opCost - transportCost,
+    rows,
+  };
+}
+
+function showResultOverlay(result) {
+  const profitColor = result.netProfit >= 0 ? 'green' : 'red';
+
+  const rowsHtml = result.rows.map(r => `
+    <div class="result-row">
+      <span>${r.label} (${r.units} units)</span>
+      <span class="green">+$${r.revenue.toLocaleString()}</span>
+    </div>
+    <div class="result-row" style="font-size:0.78rem;color:#aaa">
+      <span>&nbsp;&nbsp;Operating cost</span>
+      <span class="red">-$${r.opCost.toLocaleString()}</span>
+    </div>
+    <div class="result-row" style="font-size:0.78rem;color:#aaa">
+      <span>&nbsp;&nbsp;Transport cost</span>
+      <span class="red">-$${r.transport.toLocaleString()}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('result-rows').innerHTML = `
+    ${rowsHtml}
+    <div class="result-row total">
+      <span>Net Profit</span>
+      <span class="${profitColor}">$${result.netProfit.toLocaleString()}</span>
+    </div>
+  `;
+
+  document.getElementById('result-overlay').classList.remove('hidden');
+
+  // Wire submit button with current result
+  document.getElementById('btn-submit-score').onclick = () => submitScore(result);
+}
+
+function submitScore(result) {
+  if (_submitted) return;  // already submitted this result — ignore duplicate calls
+  const studentId = document.getElementById('student-id').value.trim();
+  const name      = document.getElementById('player-name').value.trim();
+  if (!studentId) { toast('학번을 입력하세요!'); return; }
+  if (!name)      { toast('이름을 입력하세요!'); return; }
+  _submitted = true;  // lock immediately before any async work
+
+  const sfRoutes = state.routes.filter(r => r.type === 'mine-factory');
+  const fhRoutes = state.routes.filter(r => r.type === 'factory-hub');
+  const chainParts = fhRoutes.map(fh => {
+    const mines = sfRoutes.filter(r => r.to === fh.from).map(r => CONFIG.regions[r.from].label).join('+');
+    return `${mines} → ${CONFIG.regions[fh.from].label} → ${CONFIG.regions[fh.to].label}`;
+  });
+  const chain = chainParts.join(' | ');
+  const units = result.rows.reduce((s, r) => s + r.units, 0);
+
+  if (_streamlitActive) {
+    // Inside Streamlit — use bidirectional component communication
+    const submitId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    Streamlit.setComponentValue({
+      type: 'submit_score',
+      submitId,
+      studentId,
+      name,
+      profit: result.netProfit,
+      units,
+      chain,
+    });
+    document.getElementById('submit-section').style.display = 'none';
+    toast('🏆 등록 중…');
+  } else {
+    // Standalone (Netlify / GitHub Pages) — open Streamlit in new tab
+    const url = STREAMLIT();
+    if (!url || url === 'STREAMLIT_URL') { toast('Leaderboard not configured yet.'); return; }
+    const params = new URLSearchParams({ autosubmit: '1', studentId, name, profit: result.netProfit, units, chain });
+    window.open(`${url}/?${params}`, '_blank');
+    toast('🏆 리더보드에 등록 중…');
+  }
+}
+
+// ── Leaderboard overlay ───────────────────────────────────────────────────────
+
+function openLeaderboard() {
+  const url = STREAMLIT();
+  if (!url || url === 'STREAMLIT_URL') { toast('Leaderboard not configured yet.'); return; }
+  window.open(url, '_blank');
+}
+
+
+function onRestart() {
+  state.budget      = CONFIG.budget.initial;
+  state.totalProfit = 0;
+  state.activeMode  = null;
+  state.facilities  = {};
+  state.routes      = [];
+
+  document.body.classList.remove('build-mode');
+  _submitted = false;
+  document.getElementById('result-overlay').classList.add('hidden');
+  document.getElementById('rank-result').style.display   = 'none';
+  document.getElementById('submit-section').style.display = '';
+  updateToolbarActive();
+  updateHUD();
+  renderPins();
+  setAnnouncement(STAGES[0].text);
+
+  if (_streamlitActive) {
+    Streamlit.setComponentValue({ type: 'play_again' });
+  }
+}
+
+// ── HUD ───────────────────────────────────────────────────────────────────────
+
+function calcExpectedUnits() {
+  const sfRoutes = state.routes.filter(r => r.type === 'mine-factory');
+  const fhRoutes = state.routes.filter(r => r.type === 'factory-hub');
+  let total = 0;
+  for (const fhRoute of fhRoutes) {
+    const factoryId = fhRoute.from;
+    const hubId     = fhRoute.to;
+    if (!regionHas(factoryId, 'factory'))  continue;
+    if (!regionHas(hubId,     'salesHub')) continue;
+    const feedingMines = sfRoutes.filter(r => r.to === factoryId);
+    if (feedingMines.length === 0) continue;
+    const rawSupply  = feedingMines.reduce((s, r) => s + (getFacilityCfg(r.from, 'mine').outputPerPeriod ?? 0), 0);
+    const factoryCfg = getFacilityCfg(factoryId, 'factory');
+    total += Math.min(rawSupply, factoryCfg.outputPerPeriod, CONFIG.regions[hubId].demand);
+  }
+  return total;
+}
+
+function updateHUD() {
+  document.getElementById('hud-budget').textContent = `$${state.budget.toLocaleString()}`;
+  const units = calcExpectedUnits();
+  document.getElementById('hud-output').textContent = units > 0 ? `${units} units` : '— units';
+  const p = document.getElementById('hud-profit');
+  p.textContent = `$${state.totalProfit.toLocaleString()}`;
+  p.className   = state.totalProfit >= 0 ? 'green' : 'red';
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+let toastTimer;
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+}

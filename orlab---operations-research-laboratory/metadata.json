@@ -1,0 +1,10 @@
+
+{
+  "name": "ORLAB - Operations Research Laboratory",
+  "description": "A world-class research lab website for Operations Research, focusing on logistics, supply chain, and intelligent manufacturing with a stunning 3D Spline background.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}

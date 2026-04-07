@@ -4,185 +4,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>논문 | ORLAB</title>
+    <title>논문 | IO LAB</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .publications-page {
-            padding-top: 120px;
-            min-height: 100vh;
-        }
+    <link rel="icon" type="image/svg+xml" href="figures/logo.svg">
+</head>
+<style>
+    .nav-link {
+        color: var(--text-secondary) !important;
+    }
 
-        .publications-page .section-header {
-            margin-bottom: 40px;
-        }
+    .nav-link:hover {
+        color: var(--text-primary) !important;
+    }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--accent-primary);
-            font-size: 0.85rem;
-            margin-bottom: 30px;
-            transition: all var(--transition-fast);
-            text-decoration: none;
-        }
+    .publications-page {
+        padding-top: 120px;
+        min-height: 100vh;
+    }
 
-        .back-link:hover {
-            transform: translateX(-3px);
-        }
+    .publications-page .section-header {
+        margin-bottom: 40px;
+    }
 
-        .back-link svg {
-            width: 14px;
-            height: 14px;
-        }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--accent-primary);
+        font-size: 0.85rem;
+        margin-bottom: 30px;
+        transition: all var(--transition-fast);
+        text-decoration: none;
+    }
 
-        .pub-section {
-            margin-bottom: 60px;
-        }
+    .back-link:hover {
+        transform: translateX(-3px);
+    }
 
-        .pub-section-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-            color: var(--accent-primary);
-        }
+    .back-link svg {
+        width: 14px;
+        height: 14px;
+    }
 
-        .publications-full-list {
-            display: flex;
-            flex-direction: column;
+    .pub-section {
+        margin-bottom: 35px;
+    }
+
+    .pub-section-title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--accent-primary);
+    }
+
+    .publications-full-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pub-item-full {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        padding: 14px 18px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        transition: all var(--transition-medium);
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .pub-item-full:hover {
+        border-color: var(--border-highlight);
+        transform: translateX(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .pub-item-full h4 {
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        line-height: 1.5;
+    }
+
+    .year-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        padding: 4px 10px;
+        margin-top: 10px;
+        border-left: 3px solid var(--accent-primary);
+    }
+
+    .pub-cover-full {
+        width: 80px;
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-width: 120px;
+    }
+
+    .journal-cover-full {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform var(--transition-medium);
+    }
+
+    .pub-cover-full img[src*="conference"] {
+        object-fit: contain;
+        background: var(--bg-secondary);
+        padding: 10px;
+    }
+
+    .pub-item-full:hover .journal-cover-full {
+        transform: scale(1.05);
+    }
+
+    .pub-item-full h4 a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
+
+    .pub-item-full h4 a:hover {
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+
+    .pub-item-full .pub-authors {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-bottom: 3px;
+    }
+
+    .pub-item-full .pub-journal {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-bottom: 6px;
+    }
+
+    .pub-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pub-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        background: rgba(100, 116, 139, 0.12);
+        color: #64748b;
+        border-radius: 4px;
+        font-weight: 600;
+        border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+
+    .pub-badge.metric {
+        background: rgba(8, 145, 178, 0.12);
+        color: #0891b2;
+        border: 1px solid rgba(8, 145, 178, 0.25);
+    }
+
+    .pub-badge.conference {
+        background: rgba(123, 104, 238, 0.15);
+        color: var(--accent-secondary);
+        border: 1px solid rgba(123, 104, 238, 0.25);
+    }
+
+    .pub-badge.tag-logistics {
+        background: rgba(59, 130, 246, 0.12);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .pub-badge.tag-network {
+        background: rgba(0, 212, 170, 0.12);
+        color: #00a882;
+        border: 1px solid rgba(0, 212, 170, 0.3);
+    }
+
+    .pub-badge.tag-production {
+        background: rgba(251, 146, 60, 0.12);
+        color: #e07820;
+        border: 1px solid rgba(251, 146, 60, 0.25);
+    }
+
+    .pub-badge.tag-nextgen {
+        background: rgba(139, 92, 246, 0.12);
+        color: #7c3aed;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .pub-item-full {
+            grid-template-columns: 1fr;
             gap: 20px;
         }
 
-        .pub-item-full {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 30px;
-            padding: 30px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            transition: all var(--transition-medium);
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .pub-item-full:hover {
-            border-color: var(--border-highlight);
-            transform: translateX(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .pub-item-full h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
         .pub-cover-full {
-            width: 120px;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            min-width: 120px;
-        }
-
-        .journal-cover-full {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform var(--transition-medium);
+            width: 100px;
+            height: 130px;
+            margin: 0 auto;
         }
 
         .pub-cover-full img[src*="conference"] {
-            object-fit: contain;
-            background: var(--bg-secondary);
-            padding: 10px;
+            padding: 8px;
         }
 
-        .pub-item-full:hover .journal-cover-full {
-            transform: scale(1.05);
+        .timeline-logo .org-logo {
+            width: 160px;
+            height: 100px;
         }
+    }
 
-        .pub-item-full h4 a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: color var(--transition-fast);
-        }
+    .year-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
 
-        .pub-item-full h4 a:hover {
-            color: var(--accent-primary);
-            text-decoration: underline;
-        }
+    .year-tab {
+        padding: 4px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
 
-        .pub-item-full .pub-authors {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
+    .year-tab:hover {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
 
-        .pub-item-full .pub-journal {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-style: italic;
-            margin-bottom: 12px;
-        }
+    .year-tab.active {
+        background: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: #fff;
+    }
 
-        .pub-badges {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .pub-badge {
-            display: inline-block;
-            font-size: 0.7rem;
-            padding: 4px 10px;
-            background: rgba(0, 212, 170, 0.15);
-            color: var(--accent-primary);
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .pub-badge.conference {
-            background: rgba(123, 104, 238, 0.15);
-            color: var(--accent-secondary);
-        }
-
-        @media (max-width: 768px) {
-            .pub-item-full {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .pub-cover-full {
-                width: 100px;
-                height: 130px;
-                margin: 0 auto;
-            }
-
-            .pub-cover-full img[src*="conference"] {
-                padding: 8px;
-            }
-
-            .timeline-logo .org-logo {
-                width: 160px;
-                height: 100px;
-            }
-        }
-    </style>
+    .pub-item-full.hidden,
+    .year-label.hidden {
+        display: none;
+    }
+</style>
 </head>
 
 <body>
@@ -190,16 +276,64 @@
     <nav class="navbar scrolled">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <span class="logo-text">OR</span><span class="logo-accent">LAB</span>
+                <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
             </a>
             <ul class="nav-menu">
-                <li><a href="index.html#about" class="nav-link">소개</a></li>
-                <li><a href="index.html#research" class="nav-link">연구분야</a></li>
-                <li><a href="index.html#publications" class="nav-link">논문</a></li>
-                <li><a href="index.html#projects" class="nav-link">연구과제</a></li>
-                <li><a href="index.html#team" class="nav-link">연구진</a></li>
-                <li><a href="index.html#contact" class="nav-link">연락처</a></li>
+                <li class="nav-dropdown">
+                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="research.html" class="nav-link" data-i18n="nav.research">연구분야</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="research.html#logistics" data-i18n="nav.research.logistics">물류 최적화</a></li>
+                        <li><a href="research.html#network" data-i18n="nav.research.network">네트워크 최적화</a></li>
+                        <li><a href="research.html#production" data-i18n="nav.research.production">생산 최적화</a></li>
+                        <li><a href="research.html#nextgen" data-i18n="nav.research.nextgen">차세대 최적화</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="publications.html" class="nav-link" style="color: var(--text-primary) !important;" data-i18n="nav.publications">논문</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="publications.html#international" data-i18n="nav.pub.international">국제 논문</a></li>
+                        <li><a href="publications.html#domestic" data-i18n="nav.pub.domestic">국내 논문</a></li>
+                        <li><a href="publications.html#conference" data-i18n="nav.pub.conference">학회지</a></li>
+                        <li><a href="publications.html#patent" data-i18n="nav.pub.patent">특허</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="projects.html" class="nav-link" data-i18n="nav.projects">연구과제</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="projects.html#ongoing" data-i18n="nav.proj.ongoing">진행중인 과제</a></li>
+                        <li><a href="projects.html#completed" data-i18n="nav.proj.completed">완료한 과제</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-dropdown">
+                    <a href="learningmaterials/index.html" class="nav-link" data-i18n="nav.courses">교육자료</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="learningmaterials/index.html#ie315000" data-i18n="nav.courses.scm">공급사슬관리</a></li>
+                        <li><a href="learningmaterials/index.html#ie105000" data-i18n="nav.courses.ie">산업경영공학의 이해</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="news.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="news.html" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="photos.html" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="contact.html" data-i18n="nav.community.contact">연락처</a></li>
+                    </ul>
+                </li>
             </ul>
+                        <div class="lang-toggle">
+                <span class="lang-option" data-lang="en" onclick="toggleLang('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-option" data-lang="ko" onclick="toggleLang('ko')">KO</span>
+            </div>
             <button class="nav-toggle" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
@@ -218,15 +352,20 @@
                 홈으로
             </a>
 
-            <div class="section-header">
-                <span class="section-tag">논문</span>
-                <h2 class="section-title">전체 <span class="highlight">논문 목록</span></h2>
-            </div>
-
-            <!-- Journal Papers -->
-            <div class="pub-section">
-                <h3 class="pub-section-title">학술지 논문</h3>
-                <div class="publications-full-list">
+            <!-- International Journal Papers -->
+            <div class="pub-section" id="international">
+                <h3 class="pub-section-title" data-i18n="nav.pub.international">국제 논문</h3>
+                <div class="year-tabs" id="year-tabs">
+                    <button class="year-tab active" data-year="all">전체</button>
+                    <button class="year-tab" data-year="2025">2025</button>
+                    <button class="year-tab" data-year="2024">2024</button>
+                    <button class="year-tab" data-year="2023">2023</button>
+                    <button class="year-tab" data-year="2022">2022</button>
+                    <button class="year-tab" data-year="2020">2020</button>
+                    <button class="year-tab" data-year="2019">2019</button>
+                </div>
+                <div class="publications-full-list" id="intl-list">
+                    <div class="year-label">2025</div>
                     <article class="pub-item-full">
                         <div>
                             <h4><a href="https://doi.org/10.1016/j.tre.2025.104415" target="_blank"
@@ -237,7 +376,9 @@
                                 204, p.104415, 2025</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
-                                <span class="pub-badge">JCR 1.4%</span>
+                                <span class="pub-badge metric">JCR 1.4%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -248,14 +389,15 @@
 
                     <article class="pub-item-full">
                         <div>
-                            <h4><a href="https://doi.org/10.1016/j.asoc.2025.113030" target="_blank"
+                            <h4><a href="https://doi.org/10.1016/j.asoc.2025.113930" target="_blank"
                                     rel="noopener noreferrer">Meta-Learning-Based Adaptive Operator Selection for
                                     Traveling Salesman Problem</a></h4>
                             <p class="pub-authors"><strong>Jeong, H.Y.</strong>, and Song, B.D.</p>
                             <p class="pub-journal">Applied Soft Computing, p.113930, 2025</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
-                                <span class="pub-badge">JCR 9.1%</span>
+                                <span class="pub-badge metric">JCR 9.1%</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -271,6 +413,9 @@
                             <p class="pub-journal">IEEE Transactions on Intelligent Transportation Systems, 2025</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 8%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -280,6 +425,7 @@
                         </div>
                     </article>
 
+                    <div class="year-label">2024</div>
                     <article class="pub-item-full">
                         <div>
                             <h4><a href="https://doi.org/10.1016/j.cie.2024.110565" target="_blank"
@@ -289,6 +435,9 @@
                             <p class="pub-journal">Computers & Industrial Engineering, 197, p.110565, 2024</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 15%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -307,6 +456,8 @@
                             <p class="pub-journal">Materials, 17(11), p.2578, 2024</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -326,6 +477,8 @@
                                 pp.1–24, 2024</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -335,6 +488,7 @@
                         </div>
                     </article>
 
+                    <div class="year-label">2023</div>
                     <article class="pub-item-full">
                         <div>
                             <h4><a href="https://doi.org/10.1016/j.jmrt.2023.11.193" target="_blank"
@@ -346,6 +500,9 @@
                             </p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">IF 6.2</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -363,6 +520,8 @@
                             <p class="pub-journal">Computers & Operations Research, 160, p.106389, 2023</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">IF 5.7</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -380,6 +539,8 @@
                             <p class="pub-journal">Systems, 11(10), p.514, 2023</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 10%</span>
+                                <span class="pub-badge tag-network">#네트워크최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -396,6 +557,8 @@
                             <p class="pub-journal">Expert Systems with Applications, 227, p.120260, 2023</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 6%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -415,6 +578,8 @@
                             </p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">IF 6.2</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -433,6 +598,8 @@
                             <p class="pub-journal">Simulation Modelling Practice and Theory, 124, p.102730, 2023</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">IF 6.0</span>
+                                <span class="pub-badge tag-network">#네트워크최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -452,6 +619,9 @@
                             </p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">IF 6.2</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
+                                <span class="pub-badge tag-nextgen">#차세대최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -460,6 +630,7 @@
                         </div>
                     </article>
 
+                    <div class="year-label">2022</div>
                     <article class="pub-item-full">
                         <div>
                             <h4><a href="https://doi.org/10.1016/j.trc.2022.103831" target="_blank"
@@ -471,6 +642,8 @@
                                 2022</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 6%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -479,6 +652,7 @@
                         </div>
                     </article>
 
+                    <div class="year-label">2020</div>
                     <article class="pub-item-full">
                         <div>
                             <h4><a href="https://doi.org/10.1109/TITS.2020.3049012" target="_blank"
@@ -489,6 +663,8 @@
                                 pp.7521–7530, 2020</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 8%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -508,6 +684,8 @@
                                 136, p.101901, 2020</p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 1.4%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -516,14 +694,17 @@
                         </div>
                     </article>
 
+                    <div class="year-label">2019</div>
                     <article class="pub-item-full">
                         <div>
-                            <h4>Truck-drone hybrid delivery routing: Payload-energy dependency and No-Fly zones</h4>
+                            <h4><a href="https://doi.org/10.1016/j.ijpe.2018.11.002" target="_blank" rel="noopener noreferrer">Truck-drone hybrid delivery routing: Payload-energy dependency and No-Fly zones</a></h4>
                             <p class="pub-authors"><strong>Jeong, H.Y.</strong>, Song, B.D.*, and Lee, S.</p>
                             <p class="pub-journal">International Journal of Production Economics, 214, pp.220–233, 2019
                             </p>
                             <div class="pub-badges">
                                 <span class="pub-badge">SCIE</span>
+                                <span class="pub-badge metric">JCR 5%</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -534,32 +715,17 @@
                 </div>
             </div>
 
-            <!-- Patents -->
-            <div class="pub-section">
-                <h3 class="pub-section-title">특허</h3>
+            <!-- Domestic Papers -->
+            <div class="pub-section" id="domestic">
+                <h3 class="pub-section-title" data-i18n="nav.pub.domestic">국내 논문</h3>
                 <div class="publications-full-list">
-                    <article class="pub-item-full">
-                        <div>
-                            <h4><a href="memebers/HYJeong/patent/1020230071207A.pdf" target="_blank"
-                                    rel="noopener noreferrer">강화 학습 기반의 가공 지도를 이용한 단조 공정의 제어변수를 최적화하기 위한 장치 및 이를 위한
-                                    방법</a></h4>
-                            <p class="pub-authors">Kim, N., and <strong>Jeong, H.Y.</strong></p>
-                            <p class="pub-journal">Korean Patent No. 10-2023-0071207</p>
-                            <div class="pub-badges">
-                                <span class="pub-badge">Pending</span>
-                            </div>
-                        </div>
-                        <div class="pub-cover-full">
-                            <img src="figures/patent/1020230071207A.png" alt="Patent 10-2023-0071207"
-                                class="journal-cover-full">
-                        </div>
-                    </article>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">등록된 국내 논문이 없습니다.</p>
                 </div>
             </div>
 
             <!-- Conference Papers -->
-            <div class="pub-section">
-                <h3 class="pub-section-title">학회 논문</h3>
+            <div class="pub-section" id="conference">
+                <h3 class="pub-section-title" data-i18n="nav.pub.conference">학회지</h3>
                 <div class="publications-full-list">
                     <article class="pub-item-full">
                         <div>
@@ -570,6 +736,7 @@
                             <p class="pub-journal">Available at SSRN 4168513</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                     </article>
@@ -584,6 +751,7 @@
                                 Systems, August 2021. Cham: Springer International Publishing, pp. 43–51</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                     </article>
@@ -600,6 +768,7 @@
                                 International Publishing, pp. 33–42</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                     </article>
@@ -614,6 +783,7 @@
                             <p class="pub-journal">Available at SSRN 4588071</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
                             </div>
                         </div>
                     </article>
@@ -627,6 +797,7 @@
                             <p class="pub-journal">Procedia Manufacturing, 39, pp.300–306, 2019</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                     </article>
@@ -640,6 +811,7 @@
                             <p class="pub-journal">Procedia Manufacturing, 39, pp.307–313, 2019</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Paper</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                     </article>
@@ -658,6 +830,7 @@
                             <p class="pub-journal">INFORMS Annual Meeting, Seattle, US, 2019</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Presentation</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -674,6 +847,7 @@
                                 Chicago, US, 2019</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Presentation</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -690,6 +864,7 @@
                                 Chicago, US, 2019</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Presentation</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -704,6 +879,7 @@
                             <p class="pub-journal">INFORMS Annual Meeting, Phoenix, US, 2018</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Presentation</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
@@ -719,10 +895,35 @@
                             <p class="pub-journal">IISE Annual Meeting, Orlando, US, 2018</p>
                             <div class="pub-badges">
                                 <span class="pub-badge conference">Conference Presentation</span>
+                                <span class="pub-badge tag-logistics">#물류최적화</span>
                             </div>
                         </div>
                         <div class="pub-cover-full">
                             <img src="figures/conference/IISE.png" alt="IISE" class="journal-cover-full">
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Patents -->
+            <div class="pub-section" id="patent">
+                <h3 class="pub-section-title" data-i18n="nav.pub.patent">특허</h3>
+                <div class="publications-full-list">
+                    <article class="pub-item-full">
+                        <div>
+                            <h4><a href="memebers/HYJeong/patent/1020230071207A.pdf" target="_blank"
+                                    rel="noopener noreferrer">강화 학습 기반의 가공 지도를 이용한 단조 공정의 제어변수를 최적화하기 위한 장치 및 이를 위한
+                                    방법</a></h4>
+                            <p class="pub-authors">Kim, N., and <strong>Jeong, H.Y.</strong></p>
+                            <p class="pub-journal">Korean Patent No. 10-2023-0071207</p>
+                            <div class="pub-badges">
+                                <span class="pub-badge">Pending</span>
+                                <span class="pub-badge tag-production">#생산최적화</span>
+                            </div>
+                        </div>
+                        <div class="pub-cover-full">
+                            <img src="figures/patent/1020230071207A.png" alt="Patent 10-2023-0071207"
+                                class="journal-cover-full">
                         </div>
                     </article>
                 </div>
@@ -736,18 +937,19 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <a href="index.html" class="nav-logo">
-                        <span class="logo-text">OR</span><span class="logo-accent">LAB</span>
-                    </a>
-                    <p>Operations Research Laboratory<br>Korea University</p>
+                        <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                        <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
+                    </a> </a>
+                    <p>지능형 최적화 연구실<br>경희대학교</p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-col">
                         <h4>빠른 링크</h4>
-                        <a href="index.html#about">소개</a>
-                        <a href="index.html#research">연구분야</a>
-                        <a href="index.html#publications">논문</a>
-                        <a href="index.html#projects">연구과제</a>
-                        <a href="index.html#team">연구진</a>
+                        <a href="index.html#news" data-i18n="nav.community.news">소식</a>
+                        <a href="research.html" data-i18n="nav.research">연구분야</a>
+                        <a href="index.html#publications" data-i18n="nav.publications">논문</a>
+                        <a href="index.html#projects" data-i18n="nav.projects">연구과제</a>
+                        <a href="team.html" data-i18n="nav.team">구성원</a>
                     </div>
                     <div class="footer-col">
                         <h4>자료</h4>
@@ -758,12 +960,46 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 ORLAB. All rights reserved.</p>
+                <p>&copy; 2026 IO LAB. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="lang.js"></script>
+    <script src="lang.js"></script>
+    <script>
+        (function () {
+            const list = document.getElementById('intl-list');
+            if (!list) return;
+
+            // Tag each article with the year from preceding year-label
+            let currentYear = null;
+            list.querySelectorAll('.year-label, article.pub-item-full').forEach(el => {
+                if (el.classList.contains('year-label')) {
+                    currentYear = el.textContent.trim();
+                } else {
+                    el.dataset.year = currentYear;
+                }
+            });
+
+            // Tab click handler
+            document.querySelectorAll('#year-tabs .year-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('#year-tabs .year-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const selected = this.dataset.year;
+                    list.querySelectorAll('article.pub-item-full').forEach(article => {
+                        article.classList.toggle('hidden', selected !== 'all' && article.dataset.year !== selected);
+                    });
+                    list.querySelectorAll('.year-label').forEach(label => {
+                        label.classList.toggle('hidden', selected !== 'all' && label.textContent.trim() !== selected);
+                    });
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

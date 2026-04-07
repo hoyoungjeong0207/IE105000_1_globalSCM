@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>연구과제 - Operations Research Laboratory</title>
+    <title>연구과제 - IO LAB</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="figures/logo.svg">
     <style>
+        .nav-link {
+            color: var(--text-secondary) !important;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary) !important;
+        }
+
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -17,32 +27,93 @@
             transition: all var(--transition-fast);
             text-decoration: none;
         }
-        
+
         .back-link:hover {
             transform: translateX(-3px);
         }
-        
+
         .back-link svg {
             width: 14px;
             height: 14px;
         }
+
+        .project-section {
+            margin-bottom: 40px;
+        }
+
+        .project-section-title {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--accent-primary);
+        }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
+    <nav class="navbar scrolled">
+        <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <span class="logo-text">OR</span><span class="logo-accent">LAB</span>
+                <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
             </a>
             <ul class="nav-menu">
-                <li><a href="index.html#about" class="nav-link">About</a></li>
-                <li><a href="index.html#research" class="nav-link">Research</a></li>
-                <li><a href="index.html#publications" class="nav-link">Publications</a></li>
-                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
-                <li><a href="index.html#team" class="nav-link">Team</a></li>
-                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+                <li class="nav-dropdown">
+                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="research.html" class="nav-link" data-i18n="nav.research">연구분야</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="research.html#logistics" data-i18n="nav.research.logistics">물류 최적화</a></li>
+                        <li><a href="research.html#network" data-i18n="nav.research.network">네트워크 최적화</a></li>
+                        <li><a href="research.html#production" data-i18n="nav.research.production">생산 최적화</a></li>
+                        <li><a href="research.html#nextgen" data-i18n="nav.research.nextgen">차세대 최적화</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="publications.html" class="nav-link" data-i18n="nav.publications">논문</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="publications.html#international" data-i18n="nav.pub.international">국제 논문</a></li>
+                        <li><a href="publications.html#domestic" data-i18n="nav.pub.domestic">국내 논문</a></li>
+                        <li><a href="publications.html#conference" data-i18n="nav.pub.conference">학회지</a></li>
+                        <li><a href="publications.html#patent" data-i18n="nav.pub.patent">특허</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="projects.html" class="nav-link" style="color: var(--text-primary) !important;" data-i18n="nav.projects">연구과제</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="projects.html#ongoing" data-i18n="nav.proj.ongoing">진행중인 과제</a></li>
+                        <li><a href="projects.html#completed" data-i18n="nav.proj.completed">완료한 과제</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-dropdown">
+                    <a href="learningmaterials/index.html" class="nav-link" data-i18n="nav.courses">교육자료</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="learningmaterials/index.html#ie315000" data-i18n="nav.courses.scm">공급사슬관리</a></li>
+                        <li><a href="learningmaterials/index.html#ie105000" data-i18n="nav.courses.ie">산업경영공학의 이해</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="news.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="news.html" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="photos.html" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="contact.html" data-i18n="nav.community.contact">연락처</a></li>
+                    </ul>
+                </li>
             </ul>
+                        <div class="lang-toggle">
+                <span class="lang-option" data-lang="en" onclick="toggleLang('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-option" data-lang="ko" onclick="toggleLang('ko')">KO</span>
+            </div>
             <button class="nav-toggle" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
@@ -56,16 +127,13 @@
         <div class="container">
             <a href="index.html" class="back-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
                 홈으로
             </a>
-            
-            <div class="section-header">
-                <span class="section-tag">연구과제</span>
-                <h2 class="section-title">전체 <span class="highlight">연구과제</span></h2>
-            </div>
 
+            <div id="ongoing" class="project-section">
+            <h3 class="project-section-title" data-i18n="nav.proj.ongoing">진행중인 과제</h3>
             <div class="projects-timeline">
                 <div class="timeline-item">
                     <div class="timeline-marker"></div>
@@ -74,7 +142,8 @@
                             <div class="timeline-text">
                                 <span class="timeline-period">2025.06 ~ 2028.05</span>
                                 <h4>V2G 기반 스마트 물류-전력망 통합 운영 최적화 연구</h4>
-                                <p>전기차가 소비 주체를 넘어 에너지 조절 자원으로 기능하는 상황을 전제로, 물류 네트워크의 운영 의사결정과 전력 계통의 안정적 관리를 하나의 최적화 틀에서 통합하여 비용 효율성·계통 안정성·지속가능성을 동시에 달성할 수 있는 통합 운영 전략을 제시하는 연구</p>
+                                <p>전기차가 소비 주체를 넘어 에너지 조절 자원으로 기능하는 상황을 전제로, 물류 네트워크의 운영 의사결정과 전력 계통의 안정적 관리를 하나의 최적화 틀에서
+                                    통합하여 비용 효율성·계통 안정성·지속가능성을 동시에 달성할 수 있는 통합 운영 전략을 제시하는 연구</p>
                                 <span class="timeline-funder">한국연구재단 · 연구책임자</span>
                             </div>
                             <div class="timeline-logo">
@@ -90,7 +159,8 @@
                             <div class="timeline-text">
                                 <span class="timeline-period">2026.01 ~ 2026.12</span>
                                 <h4>실시간 동적 가격 반응형 EV 물류–배전망 통합 운영 모형(EVRP–OPF) 정립에 관한 연구</h4>
-                                <p>실시간 전력요금 신호를 내재화하여 EV 물류 경로·충방전 의사결정과 배전망 최적화(OPF)를 연계하고, 이를 통해 물류 비용과 전력 계통 부담을 동시에 최소화하는 통합 운영 최적화 프레임워크를 정립하는 연구</p>
+                                <p>실시간 전력요금 신호를 내재화하여 EV 물류 경로·충방전 의사결정과 배전망 최적화(OPF)를 연계하고, 이를 통해 물류 비용과 전력 계통 부담을 동시에
+                                    최소화하는 통합 운영 최적화 프레임워크를 정립하는 연구</p>
                                 <span class="timeline-funder">정석물류학술재단 · 연구책임자</span>
                             </div>
                             <div class="timeline-logo">
@@ -105,7 +175,8 @@
                         <div class="timeline-main">
                             <div class="timeline-text">
                                 <span class="timeline-period">2023 ~ 현재</span>
-                                <h4>Real-time last mile delivery system using collaborative ground-aerial movable stations: Theory, algorithm and application</h4>
+                                <h4>Real-time last mile delivery system using collaborative ground-aerial movable
+                                    stations: Theory, algorithm and application</h4>
                                 <p>실시간 라스트마일 배송 시스템 개발을 위한 지상-공중 이동 기지 협업 시스템의 이론, 알고리즘 및 응용 연구</p>
                                 <span class="timeline-funder">한국연구재단</span>
                             </div>
@@ -115,13 +186,20 @@
                         </div>
                     </div>
                 </div>
+            </div><!-- /.projects-timeline -->
+            </div><!-- /#ongoing -->
+
+            <div id="completed" class="project-section">
+            <h3 class="project-section-title" data-i18n="nav.proj.completed">완료한 과제</h3>
+            <div class="projects-timeline">
                 <div class="timeline-item">
                     <div class="timeline-marker"></div>
                     <div class="timeline-content">
                         <div class="timeline-main">
                             <div class="timeline-text">
                                 <span class="timeline-period">2023</span>
-                                <h4>Development of multipoint servocontrol die cushion and process monitoring module for improving the press forming quality</h4>
+                                <h4>Development of multipoint servocontrol die cushion and process monitoring module for
+                                    improving the press forming quality</h4>
                                 <p>프레스 성형 품질 향상을 위한 다점 서보 제어 다이 쿠션 및 공정 모니터링 모듈 개발</p>
                                 <span class="timeline-funder">산업통상자원부 · <strong>(주)한빛산업</strong></span>
                             </div>
@@ -138,7 +216,8 @@
                         <div class="timeline-main">
                             <div class="timeline-text">
                                 <span class="timeline-period">2023</span>
-                                <h4>Development of motor housing for high-quality electric vehicles through the application of high-function intelligent molds</h4>
+                                <h4>Development of motor housing for high-quality electric vehicles through the
+                                    application of high-function intelligent molds</h4>
                                 <p>고기능 지능형 금형 적용을 통한 고품질 전기차 모터 하우징 개발</p>
                                 <span class="timeline-funder">중소벤처기업부 · <strong>(주)대국정공</strong></span>
                             </div>
@@ -154,7 +233,8 @@
                         <div class="timeline-main">
                             <div class="timeline-text">
                                 <span class="timeline-period">2023</span>
-                                <h4>Development of material forging and manufacturing process technology to improve the mechanical properties of the core parts of the reducer</h4>
+                                <h4>Development of material forging and manufacturing process technology to improve the
+                                    mechanical properties of the core parts of the reducer</h4>
                                 <p>감속기 핵심 부품의 기계적 특성 향상을 위한 소재 단조 및 제조 공정 기술 개발</p>
                                 <span class="timeline-funder">산업통상자원부 · <strong>(주)케이피에프충주공장</strong></span>
                             </div>
@@ -171,7 +251,8 @@
                         <div class="timeline-main">
                             <div class="timeline-text">
                                 <span class="timeline-period">2023</span>
-                                <h4>Development of vibration insulation products using hybrid materials for powertrain mount systems</h4>
+                                <h4>Development of vibration insulation products using hybrid materials for powertrain
+                                    mount systems</h4>
                                 <p>파워트레인 마운트 시스템용 하이브리드 소재를 활용한 진동 절연 제품 개발</p>
                                 <span class="timeline-funder">산업통상자원부 · <strong>(주)코다코</strong></span>
                             </div>
@@ -299,7 +380,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><!-- /.projects-timeline -->
+            </div><!-- /#completed -->
         </div>
     </section>
 
@@ -309,18 +391,19 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <a href="index.html" class="nav-logo">
-                        <span class="logo-text">OR</span><span class="logo-accent">LAB</span>
+                        <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                        <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
                     </a>
-                    <p>Operations Research Laboratory<br>Korea University</p>
+                    <p>지능형 최적화 연구실<br>경희대학교</p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-col">
                         <h4>빠른 링크</h4>
-                        <a href="index.html#about">소개</a>
-                        <a href="index.html#research">연구분야</a>
-                        <a href="index.html#publications">논문</a>
-                        <a href="index.html#projects">연구과제</a>
-                        <a href="index.html#team">연구진</a>
+                        <a href="index.html#news" data-i18n="nav.community.news">소식</a>
+                        <a href="index.html#research" data-i18n="nav.research">연구분야</a>
+                        <a href="index.html#publications" data-i18n="nav.publications">논문</a>
+                        <a href="index.html#projects" data-i18n="nav.projects">연구과제</a>
+                        <a href="index.html#team" data-i18n="nav.team">구성원</a>
                     </div>
                     <div class="footer-col">
                         <h4>자료</h4>
@@ -331,12 +414,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 ORLAB. All rights reserved.</p>
+                <p>&copy; 2026 IO LAB. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="lang.js"></script>
+    <script src="lang.js"></script>
 </body>
-</html>
 
+</html>

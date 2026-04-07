@@ -207,6 +207,31 @@
         font-weight: 600;
         color: var(--text-primary);
     }
+
+    .course-download {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        border: 1.5px solid var(--accent-primary);
+        padding: 5px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .course-download:hover {
+        background: var(--accent-primary);
+        color: #fff;
+    }
+
+    .course-download svg {
+        width: 13px;
+        height: 13px;
+    }
 </style>
 
 <body>
@@ -215,17 +240,62 @@
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">
                 <img src="../figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
-                <span class="logo-text">IO</span><span class="logo-accent"> LAB</span>
+                <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
             </a>
             <ul class="nav-menu">
-                <li><a href="../index.html#news" class="nav-link">뉴스</a></li>
-                <li><a href="../index.html#research" class="nav-link">연구분야</a></li>
-                <li><a href="../index.html#publications" class="nav-link">논문</a></li>
-                <li><a href="../index.html#projects" class="nav-link">연구과제</a></li>
-                <li><a href="../index.html#team" class="nav-link">연구진</a></li>
-                <li><a href="index.html" class="nav-link" style="color: var(--text-primary) !important;">교육자료</a></li>
-                <li><a href="../index.html#contact" class="nav-link">연락처</a></li>
+                <li class="nav-dropdown">
+                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="nav-link" data-i18n="nav.research">연구분야</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../research.html#logistics" data-i18n="nav.research.logistics">물류 최적화</a></li>
+                        <li><a href="../research.html#network" data-i18n="nav.research.network">네트워크 최적화</a></li>
+                        <li><a href="../research.html#production" data-i18n="nav.research.production">생산 최적화</a></li>
+                        <li><a href="../research.html#nextgen" data-i18n="nav.research.nextgen">차세대 최적화</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="../publications.html" class="nav-link" data-i18n="nav.publications">논문</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../publications.html#international" data-i18n="nav.pub.international">국제 논문</a></li>
+                        <li><a href="../publications.html#domestic" data-i18n="nav.pub.domestic">국내 논문</a></li>
+                        <li><a href="../publications.html#conference" data-i18n="nav.pub.conference">학회지</a></li>
+                        <li><a href="../publications.html#patent" data-i18n="nav.pub.patent">특허</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="../projects.html" class="nav-link" data-i18n="nav.projects">연구과제</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../projects.html#ongoing" data-i18n="nav.proj.ongoing">진행중인 과제</a></li>
+                        <li><a href="../projects.html#completed" data-i18n="nav.proj.completed">완료한 과제</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="index.html" class="nav-link" style="color: var(--text-primary) !important;" data-i18n="nav.courses">교육자료</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="index.html#ie315000" data-i18n="nav.courses.scm">공급사슬관리</a></li>
+                        <li><a href="index.html#ie105000" data-i18n="nav.courses.ie">산업경영공학의 이해</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="../news.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="../news.html" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="../photos.html" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="../index.html#contact" data-i18n="nav.community.contact">연락처</a></li>
+                    </ul>
+                </li>
             </ul>
+            <div class="lang-toggle">
+                <span class="lang-option" data-lang="en" onclick="toggleLang('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-option" data-lang="ko" onclick="toggleLang('ko')">KO</span>
+            </div>
             <button class="nav-toggle" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
@@ -241,202 +311,231 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                메인으로 돌아가기
+                <span data-i18n="courses.back">메인으로 돌아가기</span>
             </a>
 
             <div class="section-header">
-                <span class="section-tag">교육자료</span>
-                <h2 class="section-title"><span class="highlight">학습 도구 &amp; 실습 자료</span></h2>
+                <span class="section-tag" data-i18n="nav.courses">교육자료</span>
+                <h2 class="section-title"><span class="highlight" data-i18n-html="courses.title">학습 도구 &amp; 실습 자료</span></h2>
             </div>
 
-                <!-- ═══ IE315000 공급망관리 ═══ -->
-                <div class="course-section">
-                    <div class="course-header">
-                        <span class="course-code">IE315000</span>
-                        <span class="course-name">공급망관리</span>
-                    </div>
-                    <div class="materials-grid">
-
-                        <!-- IE315000 #1 FLP -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">🏭</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">Streamlit App · 실습 #1</span>
-                                    <div class="material-title">시설입지 최적화 경쟁 플랫폼</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                공급망 네트워크 설계(시설 개설 결정 + 물류 흐름)를 주제로 한 실습 플랫폼입니다.
-                                CSV 형식으로 의사결정변수를 제출하고 실시간 리더보드에서 최적화 결과를 비교합니다.
-                            </p>
-                            <ul style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
-                                <li>공급자 2곳, 후보 시설 3곳, 고객 4곳</li>
-                                <li>이진 변수(시설 개설) + 연속 변수(물류 흐름)</li>
-                                <li>최소 비용 목적함수 · 제약 위반 시 페널티 부과</li>
-                                <li>최고점 10,000점 기준 상대 채점</li>
-                            </ul>
-                            <div class="material-footer">
-                                <span class="material-info">IE315000_1_FLP · 2026</span>
-                                <a href="https://ie315000scmtest1-2jcyj3uggbv9p5dcmg8j2b.streamlit.app/" class="material-launch" target="_blank">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                                        <polyline points="15 3 21 3 21 9" />
-                                        <line x1="10" y1="14" x2="21" y2="3" />
-                                    </svg>
-                                    앱 실행
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- IE315000 #2 NPV -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">📈</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">Streamlit App · 실습 #2</span>
-                                    <div class="material-title">공급망 의사결정 트리 & NPV 게임</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                글로벌 시장 진입 전략을 선택하고, 수요 불확실성에 적응하며 NPV를 극대화하는 인터랙티브 의사결정 게임입니다.
-                                결정 트리, 롤백 최적화, 기대값 계산을 직접 체험합니다.
-                            </p>
-                            <ul style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
-                                <li>3가지 전략 (Offshore / Contract / Pilot)</li>
-                                <li>3기간 의사결정 트리 + 롤백 최적 정책</li>
-                                <li>현금흐름 및 NPV 투명 계산</li>
-                                <li>몬테카를로 시뮬레이션으로 정책 비교</li>
-                            </ul>
-                            <div class="material-footer">
-                                <span class="material-info">IE315000_2_NPV · 2026</span>
-                                <a href="https://ie3150002npv-k7io4hqz8zewe2dgwauxyv.streamlit.app/" class="material-launch" target="_blank">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                                        <polyline points="15 3 21 3 21 9" />
-                                        <line x1="10" y1="14" x2="21" y2="3" />
-                                    </svg>
-                                    앱 실행
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- IE315000 #3 -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">📦</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">실습 #3</span>
-                                    <div class="material-title">실습 #3</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                준비 중인 실습 자료입니다.
-                            </p>
-                            <div class="material-footer">
-                                <span class="material-info">IE315000_3 · 2026</span>
-                                <span class="coming-soon-badge">준비중</span>
-                            </div>
-                        </div>
-
-                        <!-- IE315000 Final Project -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">🎯</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">Final Project</span>
-                                    <div class="material-title">기말 프로젝트</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                준비 중인 기말 프로젝트 자료입니다.
-                            </p>
-                            <div class="material-footer">
-                                <span class="material-info">IE315000_final · 2026</span>
-                                <span class="coming-soon-badge">준비중</span>
-                            </div>
-                        </div>
-
-                    </div>
+            <!-- ═══ IE315000 공급망관리 ═══ -->
+            <div class="course-section" id="ie315000">
+                <div class="course-header">
+                    <span class="course-code">IE315000</span>
+                    <span class="course-name" data-i18n="courses.scm.name">공급사슬관리</span>
                 </div>
+                <div class="materials-grid">
 
-                <!-- ═══ IE105000 글로벌SCM ═══ -->
-                <div class="course-section">
-                    <div class="course-header">
-                        <span class="course-code">IE105000</span>
-                        <span class="course-name">글로벌SCM</span>
+                    <!-- IE315000 #1 FLP -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">🏭</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.scm.flp.tag">Streamlit App · 실습 #1</span>
+                                <div class="material-title" data-i18n="courses.scm.flp.title">시설입지 최적화 경쟁 플랫폼</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.scm.flp.desc">
+                            공급망 네트워크 설계(시설 개설 결정 + 물류 흐름)를 주제로 한 실습 플랫폼입니다.
+                            CSV 형식으로 의사결정변수를 제출하고 실시간 리더보드에서 최적화 결과를 비교합니다.
+                        </p>
+                        <ul data-i18n-html="courses.scm.flp.features"
+                            style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
+                            <li>공급자 2곳, 후보 시설 3곳, 고객 4곳</li>
+                            <li>이진 변수(시설 개설) + 연속 변수(물류 흐름)</li>
+                            <li>최소 비용 목적함수 · 제약 위반 시 페널티 부과</li>
+                            <li>최고점 10,000점 기준 상대 채점</li>
+                        </ul>
+                        <div class="material-footer">
+                            <span class="material-info">IE315000_1_FLP · 2026</span>
+                            <a href="https://ie315000scmtest1-2jcyj3uggbv9p5dcmg8j2b.streamlit.app/"
+                                class="material-launch" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                                <span data-i18n="courses.launch">앱 실행</span>
+                            </a>
+                        </div>
                     </div>
-                    <div class="materials-grid">
 
-                        <!-- IE105000 #1 globalSCM -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">🌐</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">Browser Game · 실습 #1</span>
-                                    <div class="material-title">글로벌 물류 경영 시뮬레이션</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                7개 세계 지역에서 광산·공장·판매거점을 건설하고 운송 경로를 설계하여 수익을 극대화하는 교육용 브라우저 게임입니다.
-                            </p>
-                            <ul style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
-                                <li>7개 세계 지역 · 광산·공장·판매거점 3종 시설</li>
-                                <li>지역별 수요 및 시장가격 차별화</li>
-                                <li>운송 경로 설계 및 비용 계산</li>
-                                <li>5 라운드 기반 손익 시뮬레이션</li>
-                            </ul>
-                            <div class="material-footer">
-                                <span class="material-info">IE105000_1_globalSCM · 2026</span>
-                                <a href="https://ie105000logistics01-lhbdozzj5ifb59yrewgizq.streamlit.app/" class="material-launch" target="_blank">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                                        <polyline points="15 3 21 3 21 9" />
-                                        <line x1="10" y1="14" x2="21" y2="3" />
-                                    </svg>
-                                    게임 시작
-                                </a>
+                    <!-- IE315000 #2 NPV -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">📈</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.scm.npv.tag">Streamlit App · 실습 #2</span>
+                                <div class="material-title" data-i18n="courses.scm.npv.title">수요 예측 & 창고 전략 게임</div>
                             </div>
                         </div>
-
-                        <!-- IE105000 #2 -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">🚢</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">실습 #2</span>
-                                    <div class="material-title">실습 #2</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                준비 중인 실습 자료입니다.
-                            </p>
-                            <div class="material-footer">
-                                <span class="material-info">IE105000_2 · 2026</span>
-                                <span class="coming-soon-badge">준비중</span>
-                            </div>
+                        <p class="material-description" data-i18n="courses.scm.npv.desc">
+                            고수요/저수요 시장 상태를 예측하고, 창고 입지 및 공급 전략을 선택하여 NPV를 극대화하는 인터랙티브 게임입니다.
+                            수요 기반 계획 수립과 기대값 최적화를 직접 체험합니다.
+                        </p>
+                        <ul data-i18n-html="courses.scm.npv.features"
+                            style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
+                            <li>고수요 / 저수요 상태 수요 예측</li>
+                            <li>창고 입지 및 전략 선택</li>
+                            <li>실현 수요에 따른 적응형 의사결정</li>
+                            <li>몬테카를로 시뮬레이션으로 전략 비교</li>
+                        </ul>
+                        <div class="material-footer">
+                            <span class="material-info">IE315000_2_NPV · 2026</span>
+                            <a href="https://ie3150002npv-k7io4hqz8zewe2dgwauxyv.streamlit.app/" class="material-launch"
+                                target="_blank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                                <span data-i18n="courses.launch">앱 실행</span>
+                            </a>
                         </div>
-
-                        <!-- IE105000 #3 -->
-                        <div class="material-card">
-                            <div class="material-card-header">
-                                <div class="material-icon">📊</div>
-                                <div class="material-meta">
-                                    <span class="material-tag">실습 #3</span>
-                                    <div class="material-title">실습 #3</div>
-                                </div>
-                            </div>
-                            <p class="material-description">
-                                준비 중인 실습 자료입니다.
-                            </p>
-                            <div class="material-footer">
-                                <span class="material-info">IE105000_3 · 2026</span>
-                                <span class="coming-soon-badge">준비중</span>
-                            </div>
-                        </div>
-
                     </div>
+
+                    <!-- IE315000 #3 -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">📦</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.scm.lab3.tag">실습 #3</span>
+                                <div class="material-title" data-i18n="courses.scm.lab3.title">실습 #3</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.scm.lab3.desc">
+                            준비 중인 실습 자료입니다.
+                        </p>
+                        <div class="material-footer">
+                            <span class="material-info">IE315000_3 · 2026</span>
+                            <span class="coming-soon-badge" data-i18n="courses.comingsoon">준비중</span>
+                        </div>
+                    </div>
+
+                    <!-- IE315000 Final Project -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">🎯</div>
+                            <div class="material-meta">
+                                <span class="material-tag">Final Project</span>
+                                <div class="material-title" data-i18n="courses.scm.final.title">기말 프로젝트</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.scm.final.desc">
+                            준비 중인 기말 프로젝트 자료입니다.
+                        </p>
+                        <div class="material-footer">
+                            <span class="material-info">IE315000_final · 2026</span>
+                            <span class="coming-soon-badge" data-i18n="courses.comingsoon">준비중</span>
+                        </div>
+                    </div>
+
                 </div>
+            </div>
+
+            <!-- ═══ IE105000 산업공학의 이해 ═══ -->
+            <div class="course-section" id="ie105000">
+                <div class="course-header">
+                    <span class="course-code">IE105000</span>
+                    <span class="course-name" data-i18n="courses.ie.name">산업경영공학의 이해</span>
+                    <a href="경영과학_물류_SCM_소개.pdf" class="course-download" download>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <span data-i18n="courses.ie.download">강의자료 다운로드</span>
+                    </a>
+                </div>
+                <div class="materials-grid">
+
+                    <!-- IE105000 #1 globalSCM -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">🌐</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.ie.scm.tag">Browser Game · 실습 #1</span>
+                                <div class="material-title" data-i18n="courses.ie.scm.title">글로벌 물류 경영 시뮬레이션</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.ie.scm.desc">
+                            7개 세계 지역에서 광산·공장·판매거점을 건설하고 운송 경로를 설계하여 수익을 극대화하는 교육용 브라우저 게임입니다.
+                        </p>
+                        <ul data-i18n-html="courses.ie.scm.features"
+                            style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
+                            <li>7개 세계 지역 · 광산·공장·판매거점 3종 시설</li>
+                            <li>지역별 수요 및 시장가격 차별화</li>
+                            <li>운송 경로 설계 및 비용 계산</li>
+                            <li>5 라운드 기반 손익 시뮬레이션</li>
+                        </ul>
+                        <div class="material-footer">
+                            <span class="material-info">IE105000_1_globalSCM · 2026</span>
+                            <a href="https://ie105000logistics01-lhbdozzj5ifb59yrewgizq.streamlit.app/"
+                                class="material-launch" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                                <span data-i18n="courses.ie.scm.launch">게임 시작</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- IE105000 #2 VRP -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">🚚</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.ie.vrp.tag">Browser Game · 실습 #2</span>
+                                <div class="material-title" data-i18n="courses.ie.vrp.title">픽업 & 배송 경로 최적화 게임</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.ie.vrp.desc">
+                            2대의 차량으로 5개 화물의 픽업·배송 경로를 직접 설계하고, 총 이동 거리를 최소화하는 VRP(Vehicle Routing Problem) 실습 게임입니다.
+                        </p>
+                        <ul data-i18n-html="courses.ie.vrp.features"
+                            style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
+                            <li>픽업 → 배송 선행 제약 조건 (Precedence Constraint)</li>
+                            <li>차량 적재 용량 제약 (Capacity = 3)</li>
+                            <li>지도 위 클릭으로 경로 직접 구성</li>
+                            <li>기준 최적 거리 대비 점수 산출 및 리더보드</li>
+                        </ul>
+                        <div class="material-footer">
+                            <span class="material-info">IE105000_2_VRP · 2026</span>
+                            <a href="https://ie1050002vrp-4kzfbd9vtiradayul4ynn6.streamlit.app/" class="material-launch"
+                                target="_blank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                                <span data-i18n="courses.ie.vrp.launch">게임 시작</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- IE105000 #3 -->
+                    <div class="material-card">
+                        <div class="material-card-header">
+                            <div class="material-icon">📊</div>
+                            <div class="material-meta">
+                                <span class="material-tag" data-i18n="courses.ie.lab3.tag">실습 #3</span>
+                                <div class="material-title" data-i18n="courses.ie.lab3.title">실습 #3</div>
+                            </div>
+                        </div>
+                        <p class="material-description" data-i18n="courses.ie.lab3.desc">
+                            준비 중인 실습 자료입니다.
+                        </p>
+                        <div class="material-footer">
+                            <span class="material-info">IE105000_3 · 2026</span>
+                            <span class="coming-soon-badge" data-i18n="courses.comingsoon">준비중</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 
@@ -446,23 +545,23 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <a href="../index.html" class="nav-logo">
-                        <img src="../figures/logo-white.svg" alt="IO LAB Logo" class="logo-icon">
-                        <span class="logo-text">IO </span><span class="logo-accent">LAB</span>
+                        <img src="../figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                        <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
                     </a>
-                    <p>지능형 최적화 연구실<br>경희대학교</p>
+                    <p data-i18n-html="footer.brand">지능형 최적화 연구실<br>경희대학교</p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-col">
-                        <h4>빠른 링크</h4>
-                        <a href="../index.html#news">뉴스</a>
-                        <a href="../index.html#research">연구분야</a>
-                        <a href="../index.html#publications">논문</a>
-                        <a href="../index.html#projects">연구과제</a>
-                        <a href="../index.html#team">연구진</a>
-                        <a href="index.html">교육자료</a>
+                        <h4 data-i18n="footer.quicklinks">빠른 링크</h4>
+                        <a href="../index.html#news" data-i18n="nav.community.news">소식</a>
+                        <a href="../research.html" data-i18n="nav.research">연구분야</a>
+                        <a href="../publications.html" data-i18n="nav.publications">논문</a>
+                        <a href="../projects.html" data-i18n="nav.projects">연구과제</a>
+                        <a href="../team.html" data-i18n="nav.team">구성원</a>
+                        <a href="index.html" data-i18n="nav.courses">교육자료</a>
                     </div>
                     <div class="footer-col">
-                        <h4>자료</h4>
+                        <h4 data-i18n="footer.resources">자료</h4>
                         <a href="#">GitHub</a>
                         <a href="#">Google Scholar</a>
                         <a href="#">ResearchGate</a>
@@ -476,6 +575,7 @@
     </footer>
 
     <script src="../script.js"></script>
+    <script src="../lang.js"></script>
 </body>
 
 </html>
