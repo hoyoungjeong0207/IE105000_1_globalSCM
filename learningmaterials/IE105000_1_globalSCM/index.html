@@ -4,29 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global Logistics Game</title>
+  <link rel="icon" type="image/svg+xml" href="../../figures/learning/icon-scm.svg">
   <link rel="stylesheet" href="style.css" />
-  <script>
-  // Minimal Streamlit Component API — no CDN dependency
-  (function () {
-    function send(type, data) {
-      window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type: type }, data), '*');
-    }
-    window.Streamlit = {
-      RENDER_EVENT: 'streamlit:render',
-      setComponentReady: function () { send('streamlit:componentReady', { apiVersion: 1 }); },
-      setComponentValue: function (value) { send('streamlit:setComponentValue', { value: value, dataType: 'json' }); },
-      setFrameHeight: function (height) {
-        if (height == null) height = document.documentElement.scrollHeight;
-        send('streamlit:setFrameHeight', { height: height });
-      },
-    };
-    window.addEventListener('message', function (e) {
-      if (e.data && e.data.type === 'streamlit:render') {
-        window.dispatchEvent(new CustomEvent('streamlit:render', { detail: e.data }));
-      }
-    });
-  })();
-  </script>
 </head>
 <body>
 
@@ -84,7 +63,10 @@
       <div id="rank-result" style="display:none;margin-top:14px;text-align:center;line-height:1.7">
         <div id="rank-text"></div>
       </div>
-      <button id="btn-restart">🔄 Play Again</button>
+      <div id="result-action-row">
+        <button id="btn-restart">🔄 Play Again</button>
+        <button id="btn-view-lb" onclick="openLeaderboard()">🏆 Leaderboard</button>
+      </div>
     </div>
   </div>
 
@@ -114,6 +96,28 @@
 
   <!-- ── Toast ─────────────────────────────────────────────────────────── -->
   <div id="toast"></div>
+
+  <!-- ── Leaderboard screen ────────────────────────────────────────────────── -->
+  <div id="leaderboard-screen" style="display:none">
+    <div class="lb-screen-nav">
+      <button onclick="closeLeaderboard()">← Back to Game</button>
+      <button onclick="loadLeaderboard();loadComments();">🔄 Refresh</button>
+    </div>
+    <h2 class="lb-screen-title">🏆 Leaderboard</h2>
+    <table class="lb-table">
+      <thead><tr><th>#</th><th>Name</th><th>Profit</th><th>Units</th><th>Chain</th></tr></thead>
+      <tbody id="lb-tbody"><tr><td colspan="5" class="lb-msg">Loading…</td></tr></tbody>
+    </table>
+    <div id="comments-section">
+      <h3 class="lb-screen-subtitle">💬 Comments</h3>
+      <div id="comment-form">
+        <input id="comment-name" type="text" placeholder="이름 (Name)" maxlength="40" />
+        <textarea id="comment-text" placeholder="Share a reflection…" maxlength="300"></textarea>
+        <button class="comment-post-btn" onclick="submitComment()">Post</button>
+      </div>
+      <div id="comment-list"></div>
+    </div>
+  </div>
 
   <script src="config.js"></script>
   <script src="game.js"></script>

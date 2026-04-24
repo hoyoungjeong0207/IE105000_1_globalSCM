@@ -244,10 +244,10 @@
             </a>
             <ul class="nav-menu">
                 <li class="nav-dropdown">
-                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <a href="../team.html" class="nav-link" data-i18n="nav.team">구성원</a>
                     <ul class="dropdown-menu">
-                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
-                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                        <li><a href="../team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="../team.html#members" data-i18n="nav.team.members">연구원</a></li>
                     </ul>
                 </li>
                 <li class="nav-dropdown">
@@ -283,11 +283,12 @@
                     </ul>
                 </li>
                 <li class="nav-dropdown">
-                    <a href="../news.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
+                    <a href="../community.html" class="nav-link" data-i18n="nav.community">커뮤니티</a>
                     <ul class="dropdown-menu">
-                        <li><a href="../news.html" data-i18n="nav.community.news">소식</a></li>
-                        <li><a href="../photos.html" data-i18n="nav.community.photos">사진</a></li>
-                        <li><a href="../index.html#contact" data-i18n="nav.community.contact">연락처</a></li>
+                        <li><a href="../community.html#news" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="../community.html#photos" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="../community.html#contact" data-i18n="nav.community.contact">연락처</a></li>
+                        <li><a href="https://www.youtube.com/@IO-LAB-khu" data-i18n="nav.community.youtube" target="_blank" rel="noopener"><svg width="13" height="13" viewBox="0 0 24 24" fill="#FF0000" style="vertical-align:middle;margin-right:5px"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.2 3.5-6.2 3.5z"/></svg>YouTube</a></li>
                     </ul>
                 </li>
             </ul>
@@ -330,7 +331,7 @@
                     <!-- IE315000 #1 FLP -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">🏭</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-flp.svg" alt="FLP" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
                                 <span class="material-tag" data-i18n="courses.scm.flp.tag">Streamlit App · 실습 #1</span>
                                 <div class="material-title" data-i18n="courses.scm.flp.title">시설입지 최적화 경쟁 플랫폼</div>
@@ -361,30 +362,28 @@
                         </div>
                     </div>
 
-                    <!-- IE315000 #2 NPV -->
+                    <!-- IE315000 #2 APL -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">📈</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-apl.svg" alt="APL" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
-                                <span class="material-tag" data-i18n="courses.scm.npv.tag">Streamlit App · 실습 #2</span>
-                                <div class="material-title" data-i18n="courses.scm.npv.title">수요 예측 & 창고 전략 게임</div>
+                                <span class="material-tag" data-i18n="courses.scm.npv.tag">Browser Game · 실습 #2</span>
+                                <div class="material-title" data-i18n="courses.scm.npv.title">수요예측 & 총괄생산계획 게임</div>
                             </div>
                         </div>
                         <p class="material-description" data-i18n="courses.scm.npv.desc">
-                            고수요/저수요 시장 상태를 예측하고, 창고 입지 및 공급 전략을 선택하여 NPV를 극대화하는 인터랙티브 게임입니다.
-                            수요 기반 계획 수립과 기대값 최적화를 직접 체험합니다.
+                            3년간의 분기별 수요 데이터를 바탕으로 4년차 수요를 예측하고, 고용·해고 의사결정을 통해 총 비용을 최소화하는 총괄생산계획을 수립하는 인터랙티브 게임입니다.
                         </p>
                         <ul data-i18n-html="courses.scm.npv.features"
                             style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
-                            <li>고수요 / 저수요 상태 수요 예측</li>
-                            <li>창고 입지 및 전략 선택</li>
-                            <li>실현 수요에 따른 적응형 의사결정</li>
-                            <li>몬테카를로 시뮬레이션으로 전략 비교</li>
+                            <li>이동평균·지수평활·홀트·계절분해 예측 방법론</li>
+                            <li>가중 앙상블 예측으로 최적 조합 탐색</li>
+                            <li>고용·해고 기반 총괄생산계획 수립</li>
+                            <li>총 비용 기준 리더보드 (제출 3회)</li>
                         </ul>
                         <div class="material-footer">
-                            <span class="material-info">IE315000_2_NPV · 2026</span>
-                            <a href="https://ie3150002npv-k7io4hqz8zewe2dgwauxyv.streamlit.app/" class="material-launch"
-                                target="_blank">
+                            <span class="material-info">IE315000_2_APL · 2026</span>
+                            <a href="IE315000_2_NPV/index.html" class="material-launch" target="_blank">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
                                     <polyline points="15 3 21 3 21 9" />
@@ -398,7 +397,7 @@
                     <!-- IE315000 #3 -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">📦</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-inv.svg" alt="INV" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
                                 <span class="material-tag" data-i18n="courses.scm.lab3.tag">실습 #3</span>
                                 <div class="material-title" data-i18n="courses.scm.lab3.title">실습 #3</div>
@@ -416,7 +415,7 @@
                     <!-- IE315000 Final Project -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">🎯</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-final.svg" alt="Final" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
                                 <span class="material-tag">Final Project</span>
                                 <div class="material-title" data-i18n="courses.scm.final.title">기말 프로젝트</div>
@@ -453,25 +452,25 @@
                     <!-- IE105000 #1 globalSCM -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">🌐</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-global-scm.svg" alt="Global SCM" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
                                 <span class="material-tag" data-i18n="courses.ie.scm.tag">Browser Game · 실습 #1</span>
                                 <div class="material-title" data-i18n="courses.ie.scm.title">글로벌 물류 경영 시뮬레이션</div>
                             </div>
                         </div>
                         <p class="material-description" data-i18n="courses.ie.scm.desc">
-                            7개 세계 지역에서 광산·공장·판매거점을 건설하고 운송 경로를 설계하여 수익을 극대화하는 교육용 브라우저 게임입니다.
+                            세계 지도 위에서 광산·공장·판매거점을 건설하고 공급망 네트워크를 설계해 순이익을 극대화하는 교육용 브라우저 게임입니다.
                         </p>
                         <ul data-i18n-html="courses.ie.scm.features"
                             style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
                             <li>7개 세계 지역 · 광산·공장·판매거점 3종 시설</li>
-                            <li>지역별 수요 및 시장가격 차별화</li>
-                            <li>운송 경로 설계 및 비용 계산</li>
-                            <li>5 라운드 기반 손익 시뮬레이션</li>
+                            <li>지역별 수요·시장가격·운송 비용 차별화</li>
+                            <li>공급망 경로 자동 연결 및 단일 시뮬레이션</li>
+                            <li>순이익 기준 리더보드 제출 및 코멘트</li>
                         </ul>
                         <div class="material-footer">
                             <span class="material-info">IE105000_1_globalSCM · 2026</span>
-                            <a href="https://ie105000logistics01-lhbdozzj5ifb59yrewgizq.streamlit.app/"
+                            <a href="IE105000_1_globalSCM/index.html"
                                 class="material-launch" target="_blank">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
@@ -486,25 +485,25 @@
                     <!-- IE105000 #2 VRP -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">🚚</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-vrp.svg" alt="VRP" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
                                 <span class="material-tag" data-i18n="courses.ie.vrp.tag">Browser Game · 실습 #2</span>
                                 <div class="material-title" data-i18n="courses.ie.vrp.title">픽업 & 배송 경로 최적화 게임</div>
                             </div>
                         </div>
                         <p class="material-description" data-i18n="courses.ie.vrp.desc">
-                            2대의 차량으로 5개 화물의 픽업·배송 경로를 직접 설계하고, 총 이동 거리를 최소화하는 VRP(Vehicle Routing Problem) 실습 게임입니다.
+                            여러 대의 차량으로 픽업·배송 경로를 직접 구성하고, 최적 해 대비 총 이동 거리를 최소화하는 VRP(Vehicle Routing Problem) 실습 게임입니다.
                         </p>
                         <ul data-i18n-html="courses.ie.vrp.features"
                             style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
-                            <li>픽업 → 배송 선행 제약 조건 (Precedence Constraint)</li>
-                            <li>차량 적재 용량 제약 (Capacity = 3)</li>
-                            <li>지도 위 클릭으로 경로 직접 구성</li>
-                            <li>기준 최적 거리 대비 점수 산출 및 리더보드</li>
+                            <li>차량 수(1~3대)·화물 수(2~6개) 자유 설정</li>
+                            <li>픽업 우선 선행 제약 및 차량 적재 용량 제약</li>
+                            <li>지도 클릭으로 경로 직접 구성, 실시간 거리 계산</li>
+                            <li>최적 해 대비 점수(1000점 만점) 산출 및 리더보드</li>
                         </ul>
                         <div class="material-footer">
                             <span class="material-info">IE105000_2_VRP · 2026</span>
-                            <a href="https://ie1050002vrp-4kzfbd9vtiradayul4ynn6.streamlit.app/" class="material-launch"
+                            <a href="IE105000_2_VRP/index.html" class="material-launch"
                                 target="_blank">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
@@ -516,21 +515,35 @@
                         </div>
                     </div>
 
-                    <!-- IE105000 #3 -->
+                    <!-- IE105000 #3 AMR Factory Routing -->
                     <div class="material-card">
                         <div class="material-card-header">
-                            <div class="material-icon">📊</div>
+                            <div class="material-icon"><img src="../figures/learning/icon-amr.svg" alt="AMR" style="width:28px;height:28px;"></div>
                             <div class="material-meta">
-                                <span class="material-tag" data-i18n="courses.ie.lab3.tag">실습 #3</span>
-                                <div class="material-title" data-i18n="courses.ie.lab3.title">실습 #3</div>
+                                <span class="material-tag" data-i18n="courses.ie.amr.tag">Browser Game · 실습 #3</span>
+                                <div class="material-title" data-i18n="courses.ie.amr.title">AMR 공장 경로 최적화 게임</div>
                             </div>
                         </div>
-                        <p class="material-description" data-i18n="courses.ie.lab3.desc">
-                            준비 중인 실습 자료입니다.
+                        <p class="material-description" data-i18n="courses.ie.amr.desc">
+                            공장 내에서 AMR(자율이동로봇)을 조종해 화물을 픽업하고 지정 베이에 배송하는 실시간 경로 최적화 게임입니다. 충돌을 피하며 최단 시간 내에 모든 작업을 완료하세요.
                         </p>
+                        <ul data-i18n-html="courses.ie.amr.features"
+                            style="font-size:0.85rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0;">
+                            <li>다른 AMR 및 작업자와 충돌 회피</li>
+                            <li>최대 2개 화물 동시 적재 가능</li>
+                            <li>충돌 시 1.5초 정지 + 10초 페널티</li>
+                            <li>총 소요 시간 기준 리더보드</li>
+                        </ul>
                         <div class="material-footer">
-                            <span class="material-info">IE105000_3 · 2026</span>
-                            <span class="coming-soon-badge" data-i18n="courses.comingsoon">준비중</span>
+                            <span class="material-info">IE105000_3_shop · 2026</span>
+                            <a href="IE105000_3_shop/index.html" class="material-launch" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                                <span data-i18n="courses.ie.amr.launch">게임 시작</span>
+                            </a>
                         </div>
                     </div>
 

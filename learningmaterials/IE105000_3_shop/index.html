@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>AMR Factory Routing — IE105000</title>
+  <link rel="icon" type="image/svg+xml" href="../../figures/learning/icon-amr.svg">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h1>🤖 AMR Factory Routing</h1>
+
+<div class="nav">
+  <button onclick="showGame()">🎮 Game</button>
+  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
+  <button id="btn-ai" onclick="toggleAI()">🤖 AI</button>
+  <button class="primary" onclick="document.getElementById('start-overlay').classList.add('active');initGame();if(animId){cancelAnimationFrame(animId);animId=null;}">↺ Restart</button>
+</div>
+
+<!-- ═══════════════════════════════ GAME SCREEN ══════════════════════════════ -->
+<div id="game-screen">
+
+  <canvas id="game-canvas" width="640" height="480"></canvas>
+
+  <!-- HUD strip below canvas -->
+  <div id="hud">
+    <div class="hud-item">
+      <span class="hud-label">Drive Time</span>
+      <span class="hud-value" id="hud-time">0:00</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">Collisions</span>
+      <span class="hud-value" id="hud-hits">0</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">Penalty</span>
+      <span class="hud-value" id="hud-penalty">+0s</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">Total</span>
+      <span class="hud-value" id="hud-total">0:00</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">Jobs Done</span>
+      <span class="hud-value" id="hud-jobs">0/4</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">Carrying</span>
+      <span class="hud-value" id="hud-carry">0/2</span>
+    </div>
+  </div>
+
+  <!-- Job queue -->
+  <div id="job-list"></div>
+
+  <!-- Legend -->
+  <div id="controls-hint">
+    Arrow keys / WASD to move &nbsp;|&nbsp;
+    <span style="color:#00e5ff">▲ cyan</span> = pickup &nbsp;
+    <span style="color:#ff9100">★ orange</span> = dropoff &nbsp;|&nbsp;
+    Collision = frozen 1.5 s + 10 s penalty
+  </div>
+
+  <!-- D-pad mobile controls -->
+  <div id="dpad">
+    <div></div>
+    <button class="dpad-btn" data-key="ArrowUp">▲</button>
+    <div></div>
+    <button class="dpad-btn" data-key="ArrowLeft">◀</button>
+    <div class="dpad-center"></div>
+    <button class="dpad-btn" data-key="ArrowRight">▶</button>
+    <div></div>
+    <button class="dpad-btn" data-key="ArrowDown">▼</button>
+    <div></div>
+  </div>
+
+</div><!-- /#game-screen -->
+
+
+<!-- ════════════════════════════ LEADERBOARD SCREEN ═════════════════════════ -->
+<div id="leaderboard-screen">
+
+  <h2>🏆 Leaderboard</h2>
+  <p style="font-size:0.7rem;color:#306230;margin-bottom:8px;">
+    Final time = drive time + (collisions × 10 s) &nbsp;·&nbsp; lower is better
+  </p>
+
+  <div class="nav">
+    <button onclick="loadLeaderboard()">🔄 Refresh</button>
+    <button onclick="showGame()">← Back to Game</button>
+  </div>
+
+  <table id="lb-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Student</th>
+        <th>Final Time</th>
+        <th>Drive</th>
+        <th>Collisions</th>
+        <th>Submitted</th>
+      </tr>
+    </thead>
+    <tbody id="lb-tbody">
+      <tr><td colspan="6" class="lb-msg">Loading…</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Comments -->
+  <div id="comments-section">
+    <h3>💬 Comments</h3>
+    <div id="comment-form">
+      <input id="comment-name" type="text" placeholder="Your Name" autocomplete="off" />
+      <textarea id="comment-text" placeholder="Share a reflection…" maxlength="300"></textarea>
+      <button class="primary" onclick="submitComment()">Post</button>
+    </div>
+    <div id="comment-list"></div>
+  </div>
+
+</div><!-- /#leaderboard-screen -->
+
+
+<!-- ═════════════════════════════ START OVERLAY ══════════════════════════════ -->
+<div id="start-overlay" class="active">
+  <div id="submit-box">
+    <h2>🤖 AMR Factory Routing</h2>
+    <div class="result-row" style="margin-bottom:14px;line-height:1.8">
+      Deliver all packages to their bays<br/>
+      as fast as possible.<br/>
+      <span style="color:#00e5ff">▲ cyan</span> = pickup &nbsp;·&nbsp;
+      <span style="color:#ff9100">★ orange</span> = dropoff<br/>
+      Collision = frozen 1.5 s + 10 s penalty
+    </div>
+    <div class="btn-row">
+      <button class="primary" style="font-size:1.1rem;padding:10px 32px"
+              onclick="startGame()">▶ START</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SUBMIT OVERLAY ══════════════════════════════ -->
+<div id="submit-overlay">
+  <div id="submit-box">
+    <h2>🎉 All Jobs Delivered!</h2>
+
+    <div class="result-row">Drive time:  <strong id="result-time"></strong></div>
+    <div class="result-row">Collisions:  <strong id="result-collisions"></strong>
+      × 10 s = <strong id="result-penalty"></strong></div>
+    <div class="result-big">Final: <span id="result-total"></span></div>
+
+    <input id="input-name" type="text"  placeholder="Your Name" autocomplete="off" />
+    <input id="input-sid"  type="text"  placeholder="Student ID  (e.g. 2024-12345)" autocomplete="off" />
+
+    <div class="btn-row">
+      <button class="primary" id="btn-submit" onclick="submitScore()">Submit Score</button>
+      <button onclick="document.getElementById('submit-overlay').classList.remove('active');document.getElementById('start-overlay').classList.add('active');initGame();if(animId){cancelAnimationFrame(animId);animId=null;}">Play Again</button>
+    </div>
+  </div>
+</div><!-- /#submit-overlay -->
+
+
+<script src="config.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 | IO-LAB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="figures/logo.svg">
+    <style>
+        .nav-link { color: var(--text-secondary) !important; }
+        .nav-link:hover { color: var(--text-primary) !important; }
+
+        .community-page {
+            padding-top: 120px;
+            min-height: 100vh;
+        }
+
+        /* Tab bar */
+        .community-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 48px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0;
+        }
+
+        .community-tab {
+            padding: 12px 28px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: -1px;
+            font-family: inherit;
+        }
+
+        .community-tab:hover { color: var(--text-primary); }
+        .community-tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        /* Panels */
+        .community-panel { display: none; }
+        .community-panel.active { display: block; }
+
+        /* ── News ── */
+        .news-full-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .news-item-full {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 30px;
+            padding: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all var(--transition-medium);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .news-item-full:hover {
+            border-color: var(--border-highlight);
+            transform: translateX(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .news-date-full {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .news-title-full {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .news-description-full {
+            font-size: 0.93rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Photos ── */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .photo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all var(--transition-medium);
+            cursor: pointer;
+        }
+
+        .photo-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .photo-card img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-caption {
+            padding: 12px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .lightbox.open { display: flex; }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        }
+
+        .lightbox-caption {
+            margin-top: 14px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.88rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 28px;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            line-height: 1;
+            background: none;
+            border: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover { opacity: 1; }
+
+        /* ── Contact ── */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .contact-card {
+            padding: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            transition: border-color var(--transition-medium);
+        }
+
+        .contact-card:hover { border-color: var(--border-highlight); }
+
+        .contact-card-icon {
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,212,170,0.1);
+            border-radius: 12px;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .contact-card-icon svg { width: 24px; height: 24px; }
+
+        .contact-card h3 {
+            font-size: 1rem; font-weight: 700;
+            color: var(--text-primary); margin-bottom: 16px;
+        }
+
+        .contact-info-row { display: flex; flex-direction: column; gap: 10px; }
+
+        .contact-info-item { display: flex; gap: 12px; align-items: flex-start; }
+
+        .contact-info-label {
+            font-size: 0.75rem; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.08em; min-width: 70px; padding-top: 1px;
+        }
+
+        .contact-info-value {
+            font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;
+        }
+
+        .contact-info-value a { color: var(--accent-primary); text-decoration: none; }
+        .contact-info-value a:hover { text-decoration: underline; }
+
+        .join-card {
+            grid-column: 1 / -1;
+            display: flex; align-items: center; gap: 30px;
+            padding: 36px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            transition: border-color var(--transition-medium);
+        }
+
+        .join-card:hover { border-color: var(--accent-primary); }
+
+        .join-card .join-icon {
+            width: 64px; height: 64px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,212,170,0.1);
+            border-radius: 50%; color: var(--accent-primary);
+        }
+
+        .join-card .join-icon svg { width: 30px; height: 30px; }
+        .join-card .join-text { flex: 1; }
+
+        .join-card .join-text h3 {
+            font-size: 1.1rem; font-weight: 700;
+            color: var(--text-primary); margin-bottom: 6px;
+        }
+
+        .join-card .join-text p {
+            font-size: 0.88rem; color: var(--text-muted); margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; }
+            .join-card { flex-direction: column; text-align: center; }
+            .news-item-full { grid-template-columns: 1fr; gap: 8px; }
+            .community-tab { padding: 10px 16px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-dropdown">
+                    <a href="team.html" class="nav-link" data-i18n="nav.team">구성원</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="team.html#advisor" data-i18n="nav.team.advisor">지도교수</a></li>
+                        <li><a href="team.html#members" data-i18n="nav.team.members">연구원</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="research.html" class="nav-link" data-i18n="nav.research">연구분야</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="research.html#logistics" data-i18n="nav.research.logistics">물류</a></li>
+                        <li><a href="research.html#network" data-i18n="nav.research.network">네트워크</a></li>
+                        <li><a href="research.html#production" data-i18n="nav.research.production">생산</a></li>
+                        <li><a href="research.html#nextgen" data-i18n="nav.research.nextgen">차세대 최적화</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="publications.html" class="nav-link" data-i18n="nav.publications">논문</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="publications.html#international" data-i18n="nav.pub.international">국제 논문</a></li>
+                        <li><a href="publications.html#domestic" data-i18n="nav.pub.domestic">국내 논문</a></li>
+                        <li><a href="publications.html#conference" data-i18n="nav.pub.conference">학회지</a></li>
+                        <li><a href="publications.html#patent" data-i18n="nav.pub.patent">특허</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="projects.html" class="nav-link" data-i18n="nav.projects">연구과제</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="projects.html#ongoing" data-i18n="nav.proj.ongoing">진행중인 과제</a></li>
+                        <li><a href="projects.html#completed" data-i18n="nav.proj.completed">완료한 과제</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="learningmaterials/index.html" class="nav-link" data-i18n="nav.courses">교육자료</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="learningmaterials/index.html#ie315000" data-i18n="nav.courses.scm">공급사슬관리</a></li>
+                        <li><a href="learningmaterials/index.html#ie105000" data-i18n="nav.courses.ie">산업경영공학의 이해</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="community.html" class="nav-link" style="color: var(--text-primary) !important;" data-i18n="nav.community">커뮤니티</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="community.html#news" data-i18n="nav.community.news">소식</a></li>
+                        <li><a href="community.html#photos" data-i18n="nav.community.photos">사진</a></li>
+                        <li><a href="community.html#contact" data-i18n="nav.community.contact">연락처</a></li>
+                        <li><a href="https://www.youtube.com/@IO-LAB-khu" data-i18n="nav.community.youtube" target="_blank" rel="noopener"><svg width="13" height="13" viewBox="0 0 24 24" fill="#FF0000" style="vertical-align:middle;margin-right:5px"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.2 3.5-6.2 3.5z"/></svg>YouTube</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="lang-toggle">
+                <span class="lang-option" data-lang="en" onclick="toggleLang('en')">EN</span>
+                <span class="lang-divider">|</span>
+                <span class="lang-option" data-lang="ko" onclick="toggleLang('ko')">KO</span>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Community Page -->
+    <div class="community-page">
+        <div class="container">
+            <!-- Tab buttons -->
+            <div class="community-tabs">
+                <button class="community-tab" data-tab="news" data-i18n="nav.community.news">소식</button>
+                <button class="community-tab" data-tab="photos" data-i18n="nav.community.photos">사진</button>
+                <button class="community-tab" data-tab="contact" data-i18n="nav.community.contact">연락처</button>
+            </div>
+
+            <!-- 소식 -->
+            <div class="community-panel" id="panel-news">
+                <div class="news-full-list" id="community-news-list"></div>
+            </div>
+
+            <!-- 사진 -->
+            <div class="community-panel" id="panel-photos">
+                <div class="photo-grid">
+                </div>
+            </div>
+
+            <!-- 연락처 -->
+            <div class="community-panel" id="panel-contact">
+                <div class="contact-grid">
+                    <!-- Principal Investigator -->
+                    <div class="contact-card">
+                        <div class="contact-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="contact.pi.title">연구책임자</h3>
+                        <div class="contact-info-row">
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.name.label">이름</span>
+                                <span class="contact-info-value">Ho Young Jeong (정호영), Ph.D.</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.pos.label">직위</span>
+                                <span class="contact-info-value" data-i18n="contact.pi.pos.value">조교수, 경희대학교 산업경영공학과</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.office.label">연구실</span>
+                                <span class="contact-info-value" data-i18n="contact.pi.office.value">경희대학교 국제캠퍼스 우정원 6034</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.email.label">이메일</span>
+                                <span class="contact-info-value"><a href="mailto:ghy27@khu.ac.kr">ghy27@khu.ac.kr</a></span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.phone.label">전화</span>
+                                <span class="contact-info-value">031-201-2430</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Location -->
+                    <div class="contact-card">
+                        <div class="contact-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="contact.lab.title">연구실</h3>
+                        <div class="contact-info-row">
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.lab.addr.label">주소</span>
+                                <span class="contact-info-value" data-i18n="contact.lab.addr.value">경기도 용인시 기흥구 덕영대로 1732</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.lab.loc.label">위치</span>
+                                <span class="contact-info-value" data-i18n="contact.lab.loc.value">경희대학교 국제캠퍼스 공학관 504</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.pi.phone.label">전화</span>
+                                <span class="contact-info-value" style="color:var(--text-muted)" data-i18n="contact.lab.phone.value">추후 공개</span>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label" data-i18n="contact.lab.dir.label">책임자</span>
+                                <span class="contact-info-value">Ho Young Jeong (정호영)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Join -->
+                    <div class="join-card">
+                        <div class="join-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                        </div>
+                        <div class="join-text">
+                            <h3 data-i18n="recruit.title">연구진 모집</h3>
+                            <p data-i18n="contact.join.desc">운영과학과 최적화에 열정을 가진 동기부여된 연구자를 찾고 있습니다. 대학원생(석·박사) 및 학부연구생 모집 중입니다.</p>
+                        </div>
+                        <a href="https://forms.gle/HLLqtRMW9XrrN6pm9" target="_blank" rel="noopener noreferrer" class="recruiting-btn" data-i18n="recruit.btn">지원하기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <img src="figures/logo.svg" alt="IO LAB Logo" class="logo-icon">
+                        <span class="logo-name"><span class="logo-text">IO</span><span class="logo-sep">-</span><span class="logo-accent">LAB</span></span>
+                    </a>
+                    <p data-i18n-html="footer.brand">지능형 최적화 연구실<br>경희대학교</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4 data-i18n="footer.quicklinks">빠른 링크</h4>
+                        <a href="community.html#news" data-i18n="nav.community.news">소식</a>
+                        <a href="publications.html" data-i18n="nav.publications">논문</a>
+                        <a href="projects.html" data-i18n="nav.projects">연구과제</a>
+                        <a href="team.html" data-i18n="nav.team">구성원</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4 data-i18n="footer.resources">자료</h4>
+                        <a href="#">GitHub</a>
+                        <a href="#">Google Scholar</a>
+                        <a href="#">ResearchGate</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 IO-LAB. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="news-data.js"></script>
+    <script src="script.js"></script>
+    <script src="lang.js"></script>
+    <script>
+        // Tab switching with hash support
+        function showTab(tabId) {
+            document.querySelectorAll('.community-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.community-panel').forEach(p => p.classList.remove('active'));
+            const tab = document.querySelector(`.community-tab[data-tab="${tabId}"]`);
+            const panel = document.getElementById(`panel-${tabId}`);
+            if (tab) tab.classList.add('active');
+            if (panel) panel.classList.add('active');
+        }
+
+        document.querySelectorAll('.community-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                history.replaceState(null, '', `#${tab}`);
+                showTab(tab);
+            });
+        });
+
+        // Activate tab from hash or default to 'news'
+        function activateFromHash() {
+            const hash = location.hash.replace('#', '');
+            showTab(['news', 'photos', 'contact'].includes(hash) ? hash : 'news');
+        }
+        activateFromHash();
+        window.addEventListener('hashchange', activateFromHash);
+
+        // Lightbox
+        function openLightbox(src, caption) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-caption').textContent = caption;
+            document.getElementById('lightbox').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+    </script>
+</body>
+
+</html>
